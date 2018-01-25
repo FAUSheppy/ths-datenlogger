@@ -1,0 +1,9 @@
+*.png
+*.dbf
+__py*
+*.swp
+*.dbf
+*.DBF
+*.xls
+build/
+dist/

@@ -1,0 +1,107 @@
+# Ich bin ein Kommentar, das Programm ignoriert Zeilen die mit '#' beginnen.
+# Die Zeile '[plot] darf NICHT gelöscht oder verändert werden!
+
+[plot]
+plot_humidity 	= True
+plot_temperatur = True
+plot_dewcels	= False
+show_avg 		= True
+show_min 	 	= True
+show_max 	 	= True
+raster 			= True
+draw_thresholds	= True
+interactive     = True
+language        = DE
+
+default_source_path = /home/ik15ydit/reps/random-code/ths/
+default_target_dir  = /home/ik15ydit/reps/random-code/ths/
+output_filename     = test.png
+
+humidity_critical		= 55
+humidity_warning		= 50
+acceptable_temp_low		= 18
+acceptable_temp_high	= 22
+target_temperatur		= 20
+
+temperatur_plot_name	= Innenlufttemperatur
+humidity_plot_name		= rel. Luftfeuchtigkeit
+dewcels_plot_name		= Taupunkt
+y_label					= Temp./r.L.
+x_label					= Datum/Uhrzeit
+font					= calibri
+global_text_size		= 7
+xticks_font_size        = 5
+yticks_font_size        = 5
+timeformat_x_axis       = '$d.$m, $H:$M'
+acceptable_x_intervals  = 1m,5m,10m,30m,1h,2h,4h,6h
+image_rotation          = 90
+transparent_background  = no
+name_of_plot	        = None
+aspect_ratio            = A4
+
+############# eye_candy #############
+empty_space_above_plot  		= 10
+yaxis_minnimum_hight			= 95
+yaxis_start_value				= 0
+
+# True:  die Y-Achse beginnt auch bei xaxis_start_value wenn dadurch Werte nicht angezeit werden
+# False: wenn ein Wert im plot kleiner xaxis_start_value ist beginnt die Y-Achse beim kleinsten Wert im Plot
+yaxis_force_start_value			= False
+
+# ein höheres alpha für zu einer stärkeren Sättigung der Hintergrundfarbe (0 und es ist ganz weg)
+humidity_crit_alpha		= 0.35
+humidity_warning_alpha 	= 0.35
+acceptable_temp_alpha 	= 0.20
+
+# Farben: cyan, yellow, green, red, blue, black, white, grey oder RGBA-Wert
+humidity_crit_color	   = red
+humidity_warning_color = yellow
+acceptable_temp_color  = blue
+
+# Farbe der linie des graphen
+humidity_color			= red
+temperatur_color		= blue
+dewcels_color			= green
+
+plot_line_width = 0.5
+plot_line_style = solid
+
+hline_draw_lines = True
+# linestyles: https://matplotlib.org/devdocs/gallery/lines_bars_and_markers/line_styles_reference.html
+hline_line_style = --
+hline_line_width = 0.5
+grid_line_style = :
+grid_line_width = 0.15
+grid_line_color = black
+
+############# technical #############
+enable_multicore_support 	    = False
+raster_alligment_auto	 	    = True
+raster_hline_prefered_interval  = 5
+raster_minimum_hlines		    = 10
+y_tick_interval                 = 5
+outfile_resolution_in_dpi       = 200
+legend_location				    = upper right
+terminate_on_missing_input_file = True
+terminate_on_fail               = True
+add_hours_to_input              = 1
+prefered_total_xticks           = 24
+use_gui_backend                 = Agg
+add_x_labels_at_end             = 1
+xticks_label_degree             = 45
+major_line_width                = 0.5
+legend_font_size                = 5
+minor_xticks_per_major          = 5
+terminate_on_warning            = no
+
+###### DEBUGGING ######
+no_ask_date_input           = no
+input_filename              = test.dbf
+use_input_filename          = no
+debug_no_interactive        = no
+
+###### THINGS THERE IS REALLY NO REASON TO CHANGE ######
+plot_temperatur_key         = TEMP
+plot_humidity_key 	        = HUMIDITY
+plot_dewcels_key	        = DEWCELS
+always_allow_days_as_xticks = yes
