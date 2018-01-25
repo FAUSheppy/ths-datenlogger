@@ -82,12 +82,12 @@ def general_background_setup(tup,ymin,ymax,x):
     ## AXIS LABELS
     ylabel_box = dict(boxstyle="square",facecolor='grey', alpha=0.4, edgecolor='black',lw=0.5)
     xlabel_box = ylabel_box
-    label_size = 6
+    label_size = CFG("label_font_size")
     spacing=0.1
     tup[AXIS].set_ylabel(CFG("y_label"),rotation='horizontal',size=label_size,bbox=ylabel_box)
-    tup[AXIS].yaxis.set_label_coords(0.055,0.95)
+    tup[AXIS].yaxis.set_label_coords(0.045,0.970)
     tup[AXIS].set_xlabel(CFG("x_label"),size=label_size,bbox=xlabel_box)
-    tup[AXIS].xaxis.set_label_coords(0.925,0.05)
+    tup[AXIS].xaxis.set_label_coords(0.945,0.03)
     
     ## GENERAL LEGEND ##
     legend_handle = tup[AXIS].legend(
@@ -98,7 +98,7 @@ def general_background_setup(tup,ymin,ymax,x):
                     prop={'family': 'monospace','size':CFG("legend_font_size")}
                     )
     legend_handle.get_frame().set_linewidth(0.2)
-    tup[AXIS].set_aspect(get_aspect_ratio(unix_x,ymin,ymax,major_xticks))
+    #tup[AXIS].set_aspect(get_aspect_ratio(unix_x,ymin,ymax,major_xticks))
 
                 
 def get_aspect_ratio(ux,ymin,ymax,xticks):
@@ -111,8 +111,8 @@ def get_aspect_ratio(ux,ymin,ymax,xticks):
         magic_value = 3.25
         return ratio * ( max(ux) - min(ux) ) / float(ymax - ymin + magic_value)
 
-def a4_aspect():
-        return 1/math.sqrt(2)
+def a4_aspect(x):
+        return ( 1/math.sqrt(2) ) * x
 
 def grid(tup,xticks,ymin,ymax):
         lw = CFG("grid_line_width")

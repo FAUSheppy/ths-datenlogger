@@ -3,9 +3,10 @@ import sys
 import tkinter
 import plot_main
 import config_parse
-from config_parse 	import CFG
-from language 		import LAN
-from datetime 		import datetime
+from config_parse   import CFG
+from language       import LAN
+from datetime       import datetime,timedelta
+from plot_timeutils import between_dates
 
 l = LAN[CFG("language")]
 timeformat = "%d.%m.%y %H:%M:%S (%A)"
@@ -20,7 +21,7 @@ def parse_date_from_user_input(s,end_of_day=False,datapoints=None):
     
     ## EMPTY ##
     if s == None or s == "":
-        return None
+        return (None,True)
 
     ## TIME ##
     if len(s.split(" ")) > 1:
@@ -66,29 +67,82 @@ def parse_date_from_user_input(s,end_of_day=False,datapoints=None):
             month = int(date_a[1])
         if len(date_a) > 2:
             year = int(date_a[2])
+            if year < 1000:
+                year+=2000
     
+    # remember if an explizit date was give #
+    NO_YEAR=False
+    NO_MONTH=False
+
     if year == 0:
+        NO_YEAR=True
         if today.month > month:
             year = today.year
         else:
             year = today.year-1
     if month == 0:
+        NO_MONTH = True
         if today.day > day and today.year == year:
             month = today.month
         else:
             month = today.month-1
             if month < 1:
                 month = 12-month 
-        ret = datetime(year,month,day,hour,minute,second)
-        try:
-            times = datapoints[CFG("plot_temperatur_key")].times
-            if ( ret > max(times) or ret < min(times) ) and min(times).day < ret.day < max(times).day and min(times).month == max(times).month:
-                month = min(times.month)
-        except Exception as e:
-            print("Warning, magic date selection failed for an unknown reason")
 
     ret = datetime(year,month,day,hour,minute,second)
-    return ret
+    tmp = list(datapoints.values())[0].times
+    status = True
+    if NO_MONTH:
+        ret,status = correct_month(ret,min(tmp),max(tmp))
+    if NO_YEAR and status:
+        ret,status = correct_year(ret,min(tmp),max(tmp))
+    return (ret,status)
+
+def correct_year(date,data_start,data_end):
+        if not CFG("enable_automatic_date_correction"):
+            return (date,True)
+        elif date == None:
+            return (None,True)
+        else:
+            if between_dates(date,data_start,data_end):
+                return (date,True)
+            elif data_start.year != data_end.year:
+                print("Datensätze aus mehr als einem Jahr gefunden, Jahr muss daher angegeben werden.")
+                return (None,False)
+            else:
+                maxi = 12
+                count = 0
+                while count < maxi:
+                    if between_dates(date.replace(year=date.year-count),data_start-timedelta(days=1),data_end+timedelta(days=1)):
+                        return (date.replace(year=date.year-count),True)
+                    count += 1
+
+        return (date,True)
+
+def correct_month(date,data_start,data_end):
+        tmp_date = date.replace(year=data_end.year)
+        if not CFG("enable_automatic_date_correction"):
+            return (date,True)
+        elif date == None:
+            return (None,True)
+        else:
+            if between_dates(date,data_start,data_end):
+                return (date,True)
+            elif data_start.month != data_end.month:
+                print("Datensätze aus mehr als einem Monat gefunden, Monat muss daher angegeben werden.")
+                return (None,False)
+            else:
+                maxi = 12
+                count = maxi
+                while count >= 0:
+                    if between_dates(date.replace(month=((date.month+count)%12)+1),data_start,data_end):
+                        return (date.replace(month=date.month-count),True)
+                    count -= 1
+
+        return (date,True)
+
+
+
 
 def info_list(datapoints):
     if len(datapoints.keys()) > 0:
@@ -123,10 +177,13 @@ def input_date_repl(datapoints,startdate=True):
         else:
             try:
                 if startdate:
-                    date=parse_date_from_user_input(ret,datapoints=datapoints)
+                    date,ok=parse_date_from_user_input(ret,datapoints=datapoints)
                 else:
-                    date=parse_date_from_user_input(ret,True,datapoints)
-                return (date,True)
+                    date,ok=parse_date_from_user_input(ret,True,datapoints)
+                if not ok:
+                    return (None,False)
+                else:
+                    return (date,True)
             except ValueError as e:
                 print(l["cannot_parse_date"] + "( was: {} )\n".format(ret))
                 return (None,False)

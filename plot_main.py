@@ -36,6 +36,9 @@ def __plot(tup,datapoints,path,date1=None,date2=None):
         tup[FIGURE],tup[AXIS] = plt.subplots(1, 1)
 
         for g in datapoints.values():
+                #### Check if we are supposed to plot something ####
+                if not g.plot:
+                        continue
                 #### GET AND CHECK TIMEFRAMES ####
                 x,y, = g.get_timeframe(tup[CALLBACK],date1,date2)
                 if len(x) <= 0 or len(y) <= 0:
@@ -60,9 +63,30 @@ def __plot(tup,datapoints,path,date1=None,date2=None):
         ## using unix_x relys on unix_x to be the same for all plots ##
         if path == None:
             path = open_file()
-        ## TODO function for picpathn for picpath
-        pic_path = path + ".png"
-        tup[FIGURE].savefig(pic_path,dpi=CFG("outfile_resolution_in_dpi"), bbox_inches='tight',transparent=CFG("transparent_background"))
+
+        pic_path = output_path(path,date1,date2)
+        
+
+        ## set resoltuion ##
+        DPI = CFG("outfile_resolution_in_dpi")
+        fig_x_height = CFG("fig_x_height_inches")/float(1000)
+        fig_y_height = CFG("fig_y_height_inches")/float(1000)
+        tup[FIGURE].set_size_inches(fig_x_height,fig_y_height)
+
+        ## save the figure ##
+        tup[FIGURE].savefig(pic_path,dpi=DPI,pad_inches=0.1,bbox_inches='tight',transparent=CFG("transparent_background"))
 
         ### do operations on the finished png ###
         plot_imageutils.check_and_rotate(pic_path)
+
+def output_path(path,date1,date2):
+        if date1 != None and date2 == None:
+            pic_path = path + "-nach-%s"%date1.strftime("%d.%m.%y")  + ".png"
+        elif date1 == None and date2 != None:
+            pic_path = path + "-vor-%s"%date2.strftime("%d.%m.%y")  + ".png"
+        elif date1 == None and date2 == None:
+            pic_path = path + "-alles" + ".png"
+        else:
+            pic_path = path + "-%s_to_%s"%(date1.strftime("%d.%m.%y"),date2.strftime("%d.%m.%y")) + ".png"
+        print("Output wird gespeichert nach: %s"%str(pic_path))
+        return pic_path

@@ -3,7 +3,10 @@ from config_parse import CFG
 from datetime import datetime, timedelta
 
 def between_dates(t,date1,date2):
-        return t if (date1 == None or date1 < t) and (date2 == None or date2 > t) else None
+        if (date1 == None or date1 <= t) and (date2 == None or date2 > t):
+            return True
+        else:
+            return False
 
 def time_from_dbf(l,timeformat):
         timeformat=None #dont need that here

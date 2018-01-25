@@ -35,8 +35,9 @@ def selection_repl(path):
             plot_main.plot(datapoints,path)
             return None
         main_repl(datapoints,path)
-    else:
-        tmp=input(  "\n -> Type 'n' or 'new' <ENTER> to restart with another file\n -> Type 'r' or 'restart'<ENTER> to use the current file again\n (restart or selecting the same file WILL OVERRIDE the picture you just generated!)\n -> 'c'<ENTER> oder 'c <CONFIG_OPTION_NAME> <NEW_VALUE>' um Konfigurationsoptionen zu ändern\n -> Or press just <ENTER> to exit: ") 
+    if CFG("always_restart"):
+        print("----------------------------------------")
+        tmp=input(  " -> Type 'n' or 'new' <ENTER> to restart with another file\n -> Type 'r' or 'restart'<ENTER> to use the current file again\n -> Or press just <ENTER> to exit: ") 
         if tmp == None or tmp == "":
             return None
         elif tmp in ["r","restart"]:
@@ -44,9 +45,9 @@ def selection_repl(path):
         elif tmp in ["n","new"]:
             return futils.open_file()
         elif tmp.startswith('c'):
-            raise NotImplementedError("On the fly configuration not yet implemented.")
+            config_options(ret)
         else:
-            return path
+            sys.exit(0)
 
 def main():
     ### PREVENT MULTICORE SUPPORT ###
@@ -55,7 +56,14 @@ def main():
     
     ### PROMT TO OPEN FILE ###
     FILE_READY = False
+    path = None
     while True:
-        path = selection_repl(futils.open_file())
+        if not FILE_READY:
+            path = futils.open_file()
+
+        path = selection_repl(path)
+
         if path == None:
                 break
+        else:
+            FILE_READY = True

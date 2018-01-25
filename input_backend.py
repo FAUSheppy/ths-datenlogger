@@ -21,8 +21,21 @@ class Data:
         self.times  = []
         self.plot = plot
 
-    ## no idea on what kind of drugs I was when i wrote this function (it is somewhat ingenious though) ##
     def get_timeframe(self, callback,date1=None,date2=None):
+        out_x = []
+        out_y = []
+        i = 0
+        if(len(self.times) != len(self.data)):
+            raise RuntimeError("len(timestamps) != len(data), cannot continue, this should never happen")
+        while(i<len(self.times)):
+            if callback(self.times[i],date1,date2):
+                out_x += [ self.times[i] ]
+                out_y += [ self.data[i]  ]
+            i += 1
+        return (out_x,out_y)
+
+    ## no idea on what kind of drugs I was when i wrote this function (it is somewhat ingenious though) ##
+    def _get_timeframe(self, callback,date1=None,date2=None):
         r=dict()
         for t,c in zip(self.times,self.data):
             t = callback(t,date1,date2)

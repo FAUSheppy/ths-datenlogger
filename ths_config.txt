@@ -2,20 +2,12 @@
 # Die Zeile '[plot] darf NICHT gelöscht oder verändert werden!
 
 [plot]
-plot_humidity 	= True
-plot_temperatur = True
-plot_dewcels	= False
-show_avg 		= True
-show_min 	 	= True
-show_max 	 	= True
-raster 			= True
-draw_thresholds	= True
-interactive     = True
-language        = DE
-
-default_source_path = /home/ik15ydit/reps/random-code/ths/
-default_target_dir  = /home/ik15ydit/reps/random-code/ths/
-output_filename     = test.png
+plot_humidity 	= ja
+plot_temperatur = ja
+plot_dewcels	= nein
+show_avg 		= ja
+show_min 	 	= ja
+show_max 	 	= ja
 
 humidity_critical		= 55
 humidity_warning		= 50
@@ -29,17 +21,33 @@ dewcels_plot_name		= Taupunkt
 y_label					= Temp./r.L.
 x_label					= Datum/Uhrzeit
 font					= calibri
-global_text_size		= 7
-xticks_font_size        = 5
-yticks_font_size        = 5
-timeformat_x_axis       = '$d.$m, $H:$M'
-acceptable_x_intervals  = 1m,5m,10m,30m,1h,2h,4h,6h
-image_rotation          = 90
-transparent_background  = no
-name_of_plot	        = None
-aspect_ratio            = A4
 
-############# eye_candy #############
+image_rotation          = 90
+xticks_label_degree     = 45
+# in milli-inches
+#fig_x_height_inches       = 23380
+#fig_y_height_inches       = 16532
+fig_x_height_inches       = 12100
+fig_y_height_inches       =  8075
+
+timeformat_x_axis       = '$d.$m, $H:$M'
+
+global_text_size		= 10
+xticks_font_size        = 10
+yticks_font_size        = 10
+legend_font_size        = 8
+label_font_size         = 8
+
+always_restart          = yes
+
+legend_location		    = upper right
+transparent_background  = no
+acceptable_x_intervals  = 1m,5m,10m,30m,1h,2h,4h,6h
+name_of_plot	        = None
+
+enable_automatic_date_correction = yes
+
+###### PLOT Styles (Farben, Scala, Linestyles) ######
 empty_space_above_plot  		= 10
 yaxis_minnimum_hight			= 95
 yaxis_start_value				= 0
@@ -67,41 +75,45 @@ plot_line_width = 0.5
 plot_line_style = solid
 
 hline_draw_lines = True
-# linestyles: https://matplotlib.org/devdocs/gallery/lines_bars_and_markers/line_styles_reference.html
 hline_line_style = --
 hline_line_width = 0.5
+
 grid_line_style = :
 grid_line_width = 0.15
 grid_line_color = black
 
-############# technical #############
-enable_multicore_support 	    = False
-raster_alligment_auto	 	    = True
-raster_hline_prefered_interval  = 5
-raster_minimum_hlines		    = 10
+raster 			= True
+draw_thresholds	= True
+
 y_tick_interval                 = 5
-outfile_resolution_in_dpi       = 200
-legend_location				    = upper right
-terminate_on_missing_input_file = True
-terminate_on_fail               = True
-add_hours_to_input              = 1
+raster_hline_prefered_interval  = 5
 prefered_total_xticks           = 24
-use_gui_backend                 = Agg
-add_x_labels_at_end             = 1
-xticks_label_degree             = 45
 major_line_width                = 0.5
-legend_font_size                = 5
 minor_xticks_per_major          = 5
-terminate_on_warning            = no
+raster_minimum_hlines		    = 10
+
+add_hours_to_input              = 1
+add_x_labels_at_end             = 1
 
 ###### DEBUGGING ######
 no_ask_date_input           = no
-input_filename              = test.dbf
+input_filename              = test.xls
 use_input_filename          = no
 debug_no_interactive        = no
+terminate_on_warning        = no
+terminate_on_missing_input_file = True
+terminate_on_fail               = True
+default_source_path         = test_data/
+default_target_dir          = UseSourceDir
 
 ###### THINGS THERE IS REALLY NO REASON TO CHANGE ######
 plot_temperatur_key         = TEMP
 plot_humidity_key 	        = HUMIDITY
-plot_dewcels_key	        = DEWCELS
+plot_dewcels_key	        = TAU_P
 always_allow_days_as_xticks = yes
+language                    = DE
+aspect_ratio                = A4
+use_gui_backend             = Agg
+enable_multicore_support 	= False
+raster_alligment_auto	 	= True
+outfile_resolution_in_dpi   = 250
