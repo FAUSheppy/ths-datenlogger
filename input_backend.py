@@ -103,6 +103,8 @@ def read_in_file(path,backend=None):
                 dbfread(path,datapoints,pt,ph,pd)
         elif path.endswith(".xls") or path.endswith(".XLS"):
                 csvread(path,datapoints,pt,ph,pd)
+        elif path.endswith(".txt"):
+                csvread_txt(path,datapoints,pt,ph,pd)
         else:
                 raise NotImplementedError("Cannot determine filetype, cannot continue. Exit.")
 
@@ -129,6 +131,25 @@ def csvread(path,datapoints,pt,ph,pd):
                         row["taupunkt"]     = float(row_arg[5])
                         parse_line(datapoints,row,'datetime',[ ('temp',pt) , ('hum',ph) , ('taupunkt',pd) ],\
                                         plot_timeutils.time_from_csv,timeformat="%d-%m-%Y%H:%M:%S")
+        print("Info: Ignored %d lines at beginning of file"%count)
+
+def csvread_txt(path,datapoints,pt,ph,pd):
+        count = 0;
+        with open(path) as f:
+            for l in f:
+                    if any(s in l for s in ["Logger","Datenquelle","Sensortyp","Einheit","Daten"]):
+                            count += 1
+                            continue
+                    else:
+                        row_arg = list(map(lambda s:s.replace(" ","").replace(",","."),l.split("\t")))
+                        row = {"temp":None,"hum":None,"taupunkt":None,"datetime":None}
+                        row["datetime"]     = "%s-%s-%s_%s:%s"%(row_arg[0],row_arg[1],row_arg[2],row_arg[3],row_arg[4])
+                        print(row["datetime"])
+                        row["temp"]         = float(row_arg[6])
+                        row["hum"]          = float(row_arg[7])
+                        row["taupunkt"]     = 0.0
+                        parse_line(datapoints,row,'datetime',[ ('temp',pt) , ('hum',ph) , ('taupunkt',pd) ],\
+                                        plot_timeutils.time_from_csv,timeformat="%d-%m-%Y_%H:%M")
         print("Info: Ignored %d lines at beginning of file"%count)
 
 def check_read_in(datapoints):

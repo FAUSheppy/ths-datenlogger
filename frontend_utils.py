@@ -246,7 +246,7 @@ def open_file():
         return f
 
     path=None
-    path=tkinter.filedialog.askopenfilename(filetypes=(("DBF/XLS Files",("*.DBF","*.dbf","*.xls","*.XLS")),("All Files","*.*")))
+    path=tkinter.filedialog.askopenfilename(filetypes=(("DBF/XLS Files",("*.DBF","*.dbf","*.xls","*.XLS","*.txt","*.TXT")),("All Files","*.*")))
     if path == None or path=="":
         print("Error: No file selected!")
         return None
