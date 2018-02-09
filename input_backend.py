@@ -27,11 +27,33 @@ class Data:
         i = 0
         if(len(self.times) != len(self.data)):
             raise RuntimeError("len(timestamps) != len(data), cannot continue, this should never happen")
-        while(i<len(self.times)):
-            if callback(self.times[i],date1,date2):
-                out_x += [ self.times[i] ]
-                out_y += [ self.data[i]  ]
-            i += 1
+        if(len(self.times) <= 2):
+            print("WARNING: No Data for %s!"%self.name)
+            return (None,None)
+        ############ AVERAGE OUT DATA #############
+        if(CFG("combine_data_points") >= (self.times[1] - self.times[0]).total_seconds()):
+            x_dp = 5
+            m_t  = 3
+            while(i+x_dp<len(self.times)):
+                # check middle time #
+                if callback(self.times[i+m_t],date1,date2):
+                    subset=0
+                    subset_data=0.0
+                    subset_time=timedelta(0)
+                    while subset < x_dp:
+                        subset_data += self.data [i+subset]
+                        subset_time += self.times[i+subset]-datetime(2000,1,1)
+                        subset += 1
+                    out_x += [ subset_time/x_dp + datetime(2000,1,1) ]
+                    out_y += [ subset_data/x_dp ]
+                i += x_dp
+        ############ AVERAGE OUT DATA ###########
+        else:
+            while(i<len(self.times)):
+                if callback(self.times[i],date1,date2):
+                    out_x += [ self.times[i] ]
+                    out_y += [ self.data[i]  ]
+                i += 1
         return (out_x,out_y)
 
     ## no idea on what kind of drugs I was when i wrote this function (it is somewhat ingenious though) ##
@@ -144,7 +166,6 @@ def csvread_txt(path,datapoints,pt,ph,pd):
                         row_arg = list(map(lambda s:s.replace(" ","").replace(",","."),l.split("\t")))
                         row = {"temp":None,"hum":None,"taupunkt":None,"datetime":None}
                         row["datetime"]     = "%s-%s-%s_%s:%s"%(row_arg[0],row_arg[1],row_arg[2],row_arg[3],row_arg[4])
-                        print(row["datetime"])
                         row["temp"]         = float(row_arg[6])
                         row["hum"]          = float(row_arg[7])
                         row["taupunkt"]     = 0.0

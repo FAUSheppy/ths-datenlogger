@@ -117,3 +117,5 @@ use_gui_backend             = Agg
 enable_multicore_support 	= False
 raster_alligment_auto	 	= True
 outfile_resolution_in_dpi   = 250
+# <= what stepsize should datapoints be combined (s)
+combine_data_points         = 1
