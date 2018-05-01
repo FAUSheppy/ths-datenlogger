@@ -17,9 +17,13 @@ def main_repl(datapoints,path,date1=None,date2=None,done1=False,done2=False):
     ### READ IN DATES ###
     futils.info_list(datapoints)
     while not done1:
-        date1,done1 = futils.input_date_repl(datapoints,startdate=True)
+        date1,done1,raw1 = futils.input_date_repl(datapoints,startdate=True)
     while not done2:
-        date2,done2 = futils.input_date_repl(datapoints,startdate=False)
+        date2,done2,raw2 = futils.input_date_repl(datapoints,startdate=False)
+
+    # save history here
+    futils.save_history(raw1)
+    futils.save_history(raw2)
 
     ### CHECK DATES ###
     done1,done2 = futils.check_dates(path,date1,date2)
@@ -64,6 +68,6 @@ def main():
         path = selection_repl(path)
 
         if path == None:
-                break
+            break
         else:
             FILE_READY = True

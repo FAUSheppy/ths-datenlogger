@@ -141,20 +141,89 @@ def correct_month(date,data_start,data_end):
 
         return (date,True)
 
+#TODO cfg histfile
+#TODO cfg histlength
+#TODO cfg histshow
+#TODO cfg dontsaveonhistcall
+history=None
+def load_history(histfile="history.log"):
+    tmp = []
+    histlength = CFG("history_file_length")
+    try:
+        with open(histfile,"r") as f:
+            for l in f:
+                tmp_line = l.strip("\n")
+                if not tmp_line in tmp:
+                    tmp += [tmp_line]
+        if len(tmp) > histlength:
+            with open(histfile,"w") as f:
+                for l in tmp[(len(tmp)-histlength-1):]:
+                    f.write("{}\n".format(l.strip("\n")))
+        tmp = tmp[(len(tmp)-histlength-1):]
+    except IOError:
+        print(">> Warnung: Eingabehistorie Datei nicht gefunden <<")
+    return tmp
 
+def save_history(string,histfile="history.log"):
+    global history
+    if not string:
+        return
+    # remove previous occourence if exists
+    if string in history:
+        history.remove(string)
+    # add
+    string = string.strip("\n")
+    history += [string]
+    # check max file length
+    with open(histfile,"a") as f:
+        f.write("{}\n".format(string.strip("\n")))
 
+def load_from_history(index):
+    global history
+    index = int(index)
+    return history[-index]
+
+def recently_used():
+    global history
+    if not history:
+        history = load_history()
+    ret = ""
+    if len(history) == 0:
+        return "  Historie leider nicht verfügbar."
+    count = 1
+    count_max = CFG("history_show")
+    count_max = len(history) if len(history) < count_max else count_max
+    double_col =  CFG("history_double_col")
+    col = 0
+    hist_reversed = history[-count_max:].copy()
+    hist_reversed.reverse()
+    print(hist_reversed)
+    for e in hist_reversed:
+        if col == 0 and double_col:
+            ret += "  [{}] {}\t".format(count,e)
+            col = 1
+        else:
+            ret += "  [{}] {}\n".format(count,e)
+            col = 0
+        count += 1
+    return ret
+    
 
 def info_list(datapoints):
     if len(datapoints.keys()) > 0:
         print("Erster Datensatz:  "+min(datapoints[list(datapoints.keys())[0]].times).strftime(timeformat))
         print("Letzer Datensatz:  "+max(datapoints[list(datapoints.keys())[0]].times).strftime(timeformat))
         print("Anzahl Datensätze: "+str(len(datapoints[list(datapoints.keys())[0]].times)))
+        print("Kürzlich genutze Data/Zeiten: (auswählen mit 1-5 <ENTER>):\n\n{}".format(recently_used()))
     else:
         print("Keine Datesätze gefunden!")
     print_sep_line(True)
 
+end_date_available = None
 def input_date_repl(datapoints,startdate=True):
+    global end_date_available
     date = None
+
     while True:
         try:
             if startdate:
@@ -162,9 +231,19 @@ def input_date_repl(datapoints,startdate=True):
             else:
                 ret = input(l["input_second_date"])
         except EOFError:
-            return (date,True)
+            return (date,True,None)
         except KeyboardInterrupt:
             sys.exit(2)
+        # change ret to value if it was an history one
+        try:
+            if int(ret) in range(1,CFG("history_show")+1):
+                try:
+                    ret = load_from_history(ret)
+                except Exception:
+                    print("Konnte historische Eingabe nicht finden.")
+                    continue
+        except:
+            pass
         if ret in ["h","help","hilfe"]:
             if startdate:
                 print(l["input_first_date_help"])
@@ -181,12 +260,12 @@ def input_date_repl(datapoints,startdate=True):
                 else:
                     date,ok=parse_date_from_user_input(ret,True,datapoints)
                 if not ok:
-                    return (None,False)
+                    return (None,False,ret)
                 else:
-                    return (date,True)
+                    return (date,True,ret)
             except ValueError as e:
                 print(l["cannot_parse_date"] + "( was: {} )\n".format(ret))
-                return (None,False)
+                return (None,False,ret)
 
 def print_sep_line(ln=False):
     if not ln:
