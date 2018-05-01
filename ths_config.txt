@@ -50,7 +50,6 @@ enable_automatic_date_correction = yes
 # history options
 history_file_length  = 1000
 history_show         = 10
-history_save_on_call = no
 history_double_col   = yes
 
 ###### PLOT Styles (Farben, Scala, Linestyles) ######
