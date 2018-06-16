@@ -15,6 +15,8 @@ tk.withdraw()
 
 def main_repl(datapoints,path,date1=None,date2=None,done1=False,done2=False):
     ### READ IN DATES ###
+    raw1 = ""
+    raw2 = ""
     futils.info_list(datapoints)
     while not done1:
         date1,done1,raw1 = futils.input_date_repl(datapoints,startdate=True)
