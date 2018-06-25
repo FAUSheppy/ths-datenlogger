@@ -5,5 +5,9 @@ __py*
 *.dbf
 *.DBF
 *.xls
+*.txt
+*.pyc
+*.log
+*.zip
 build/
 dist/
