@@ -155,9 +155,11 @@ def csvread(path,datapoints,pt,ph,pd):
                                         plot_timeutils.time_from_csv,timeformat="%d-%m-%Y%H:%M:%S")
         print("Info: Ignored %d lines at beginning of file"%count)
 
+import codecs
 def csvread_txt(path,datapoints,pt,ph,pd):
         count = 0;
-        with open(path) as f:
+        f = open(path) 
+        try:
             for l in f:
                     if any(s in l for s in ["Logger","Datenquelle","Sensortyp","Einheit","Daten"]):
                             count += 1
@@ -171,7 +173,31 @@ def csvread_txt(path,datapoints,pt,ph,pd):
                         row["taupunkt"]     = 0.0
                         parse_line(datapoints,row,'datetime',[ ('temp',pt) , ('hum',ph) , ('taupunkt',pd) ],\
                                         plot_timeutils.time_from_csv,timeformat="%d-%m-%Y_%H:%M")
-        print("Info: Ignored %d lines at beginning of file"%count)
+        except UnicodeError:
+            count = csvread_txt_fallback(path,datapoints,pt,ph,pd)
+
+        print("Info: Ignored %d lines at beginning of the file"%count)
+        f.close()
+
+def csvread_txt_fallback(path,datapoints,pt,ph,pd):
+    '''fallback for different format and encoding of txt'''
+    count = 0
+    with codecs.open(path, "r",encoding="ISO8859_2", errors='repalce') as f:
+        for l in f:
+            if any(s in l for s in ["Logger","Datenquelle","Sensortyp","Einheit","Daten"]):
+                count += 1
+                continue
+            else:
+                date,time,temp,hum = l.replace(" ","").replace(".","-").replace(",",".").split("\t")
+                row = {"temp":None,"hum":None,"taupunkt":None,"datetime":None}
+                row["datetime"]     = "{}_{}".format(date,time[:5])
+                row["temp"]         = float(temp)
+                row["hum"]          = float(hum)
+                row["taupunkt"]     = 0.0
+                parse_line(datapoints,row,'datetime',[ ('temp',pt) , ('hum',ph) , ('taupunkt',pd) ],\
+                                plot_timeutils.time_from_csv,timeformat="%d-%m-%Y_%H:%M")
+    return count
+
 
 def check_read_in(datapoints):
         good = False
