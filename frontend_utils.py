@@ -197,7 +197,7 @@ def recently_used():
     col = 0
     hist_reversed = history[-count_max:].copy()
     hist_reversed.reverse()
-    print(hist_reversed)
+    #print(hist_reversed)
     for e in hist_reversed:
         if col == 0 and double_col:
             ret += "  [{}] {}\t".format(count,e)
