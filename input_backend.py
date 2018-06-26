@@ -173,7 +173,7 @@ def csvread_txt(path,datapoints,pt,ph,pd):
                         row["taupunkt"]     = 0.0
                         parse_line(datapoints,row,'datetime',[ ('temp',pt) , ('hum',ph) , ('taupunkt',pd) ],\
                                         plot_timeutils.time_from_csv,timeformat="%d-%m-%Y_%H:%M")
-        except UnicodeError:
+        except (UnicodeError, IndexError):
             count = csvread_txt_fallback(path,datapoints,pt,ph,pd)
 
         print("Info: Ignored %d lines at beginning of the file"%count)
