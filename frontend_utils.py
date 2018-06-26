@@ -141,10 +141,6 @@ def correct_month(date,data_start,data_end):
 
         return (date,True)
 
-#TODO cfg histfile
-#TODO cfg histlength
-#TODO cfg histshow
-#TODO cfg dontsaveonhistcall
 history=None
 def load_history(histfile="history.log"):
     tmp = []
