@@ -1,5 +1,5 @@
 ## What is this?
-This tool was developed to enable easy analysis of USB-Dataloggers that record humidity and/or temperature, supporting a variety of formats with a comfortable, minimalistic and easy to use, interface.
+This tool was developed to enable easy analysis of USB-Dataloggers that record humidity and/or temperature, supporting a variety of formats with a comfortable, minimalistic and easy to use, interface. The output is highly configurable, check the example-``config`` file for details.
 
 ## Dependencies (pip3)
 
