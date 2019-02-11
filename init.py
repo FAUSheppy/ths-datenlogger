@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-import frontend_new
+import frontend
 import sys
 if __name__ == "__main__":
-            frontend_new.main()
+            frontend.main()
             sys.exit(0)

@@ -1,9 +1,9 @@
 #!/usr/bin/python3
-import frontend_new
+import frontend
 import sys
 if __name__ == "__main__":
         try:
-            frontend_new.main()
+            frontend.main()
             #input("Done! <ENTER> to exit")
             sys.exit(0)
         except KeyboardInterrupt as e:
