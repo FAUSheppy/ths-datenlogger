@@ -8,6 +8,7 @@ This tool was developed to enable easy analysis of USB-Dataloggers that record h
     matplotlib
     codecs
     dbfread
+    PIL
 
 ## Supported Formats
 
