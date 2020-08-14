@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 from config_parse import CFG
 from datetime import datetime, timedelta
+import requests
+import os
 
 from dbfread import DBF
 import plot_timeutils
@@ -20,6 +22,14 @@ class Data:
         self.data = []
         self.times  = []
         self.plot = plot
+
+    def getFirstTime(self):
+        '''Get time of first timestamp'''
+        return min(self.times)
+
+    def getLastTime(self):
+        '''Get time of last timestamp'''
+        return max(self.times)
 
     def get_timeframe(self, callback,date1=None,date2=None):
         out_x = []
@@ -76,7 +86,7 @@ class Data:
         arr_v = [x for _,x in sorted(zip(arr_t,arr_v))]
         return (arr_t,arr_v)
 
-def parse_line(datapoints,line,timekey,keys,time_parser,timeformat=None):
+def parse_line(datapoints, line, timekey, keys, time_parser, timeformat=None):
         # This function expects:
         #       - datapoints { String:DataObject }
         #       - line       { String:Any        }
@@ -87,36 +97,100 @@ def parse_line(datapoints,line,timekey,keys,time_parser,timeformat=None):
                 datapoints[ key[1] ].data  += [ line[ key[0] ] ]
                 datapoints[ key[1] ].times += [      time      ]
 
-def read_in_file(path,backend=None):
-        global tname
-        global hname
-        global dname
-        global opath
+def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype):
+    '''Download and parses external data of type dtype'''
+
+    # prepare strings #
+    cacheDir    = CFG("cache_dir")
+    fromTimeStr = fromTime.strftime(CFG("nff_url_timeformat"))
+    toTimeStr   = toTime.strftime(CFG("nff_url_timeformat"))
+    cacheFile   = "cache_{}_{}_{}.data".format(dtype, fromTimeStr, toTimeStr)
+    fullpath   = os.path.join(cacheDir, cacheFile)
+
+    # check for cache file
+    content = None
+    if not os.path.isfile(fullpath):
         
+        # download date if it doesn't exist #
+        url = CFG("outside_data_url").format(dtype=dtype, fromDate=fromTimeStr, toDate=toTimeStr)
+        r = requests.get(url)
+        print(url)
+        content = r.content.decode('utf-8', "ignore") # ignore bad bytes
+
+        # cache data #
+        if not os.path.isdir(cacheDir):
+            os.mkdir(cacheDir)
+        with open(fullpath, 'w') as f:
+            f.write(content)
+
+    else:
+
+        # get data from cache otherwise
+        print("INFO: Cache hit: {}".format(cacheFile))
+        with open(fullpath) as f:
+            content = f.read()
+
+    skipBecauseFirstLine = True
+    for l in content.split("\n"):
+        if not ";" in l:
+            continue
+        elif not l.strip():
+            continue
+        elif skipBecauseFirstLine:
+            skipBecauseFirstLine = False
+            continue
+
+        try:
+            timeStr, value = l.split(";")
+            timestamp = plot_timeutils.time_from_csv(timeStr, CFG("nff_input_timeformat"))
+
+            datapoints[plotNameKey].data  += [float(value.replace(",","."))]
+            datapoints[plotNameKey].times += [timestamp]
+        except ValueError as e:
+            print(l)
+            raise e
+
+
+def read_in_file(path, backend=None, outsideData=False):
+        '''Read in a file, add outside data if requested'''
+
         datapoints = dict()
+        identifiers =  [ CFG("plot_temperatur_key"),
+                         CFG("plot_humidity_key"),
+                         CFG("plot_dewcels_key"),
+                         CFG("plot_outside_temperatur_key"),
+                         CFG("plot_outside_humidity_key") ]
 
-        pt=CFG("plot_temperatur_key")
-        ph=CFG("plot_humidity_key")
-        pd=CFG("plot_dewcels_key")
-        
-        ## NAME PADDING ##
-        max_name_len = max(len(tname),len(hname),len(dname))
-        while len(tname) < max_name_len:
-                tname += " "
-        while len(hname) < max_name_len:
-                hname += " "    
-        while len(dname) < max_name_len:
-                dname += " "
+        names  = [ CFG("temperatur_plot_name"),
+                   CFG("humidity_plot_name"),
+                   CFG("dewcels_plot_name"),
+                   CFG("temperatur_outside_plot_name"),
+                   CFG("humidity_outside_plot_name") ]
 
-        datapoints.update({ pt:Data( tname,CFG("plot_temperatur") ) })
-        datapoints[pt].color = CFG("temperatur_color")      
+        colors = [ CFG("temperatur_color"),
+                   CFG("humidity_color"),
+                   CFG("dewcels_color"),
+                   CFG("temperatur_outside_color"),
+                   CFG("humidity_outside_color") ]
+
+        plotSettings = [ CFG("plot_temperatur"),
+                         CFG("plot_humidity"),
+                         CFG("plot_dewcels"),
+                         outsideData,
+                         outsideData ]
         
-        datapoints.update({ ph:Data( hname,CFG("plot_humidity") ) })
-        datapoints[ph].color = CFG("humidity_color")
-        
-        datapoints.update({ pd:Data( dname,CFG("plot_dewcels") ) })
-        datapoints[pd].color = CFG("dewcels_color")
-        
+        assert(len(names) == len(colors) == len(identifiers) == len(plotSettings))
+
+        max_name_len = max([len(s) for s in names])
+        for i in range(0, len(names)):
+            while len(names[i]) < max_name_len:
+                names[i] += " "
+            datapoints.update({ identifiers[i] : Data(names[i], plotSettings[i]) })
+
+        # legacy variables...
+        pt, ph, pd, pto, pho = identifiers
+
+        # parse input file #
         if path == None:
             raise Exception("Path in plot.read_in was None")
         elif backend != None:
@@ -129,8 +203,19 @@ def read_in_file(path,backend=None):
                 csvread_txt(path,datapoints,pt,ph,pd)
         else:
                 raise NotImplementedError("Cannot determine filetype, cannot continue. Exit.")
+        
+        # if nessesary download and process external data #
+        if outsideData:
 
+            fromTime = datapoints[CFG("plot_temperatur_key")].getFirstTime()
+            toTime   = datapoints[CFG("plot_temperatur_key")].getLastTime()
+
+            processExternalData(datapoints, pto, fromTime, toTime, CFG("dtype_temperatur"))
+            processExternalData(datapoints, pho, fromTime, toTime, CFG("dtype_humidity"))
+
+        # sanity check result #
         check_read_in(datapoints)
+
         return datapoints
 
 def dbfread(path,datapoints,pt,ph,pd):

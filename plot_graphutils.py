@@ -26,14 +26,16 @@ def getlimits_y(y):
 def avg(array):
         return sum(array)/float(len(array))
 
-def legend_box_contents(name,y):
-	if CFG("show_min"):
-		name += " min: %.1f,"%min(y)
-	if CFG("show_max"):
-		name += " max: %.1f,"%max(y)
-	if CFG("show_avg"):
-		name += " Mittelwert: %.1f,"% avg(y)
-	return name.rstrip(",")    
+def legend_box_contents(name, y):
+    if CFG("cap_values_at_99"):
+        y = [ min([el, 99.9]) for el in y ]
+    if CFG("show_min"):
+        name += " min: {:4.1f},".format(min(y))
+    if CFG("show_max"):
+        name += " max: {:4.1f},".format(max(y))
+    if CFG("show_avg"):
+        name += " Mittelwert: {:4.1f},".format(avg(y))
+    return name.rstrip(",")    
 
 def general_background_setup(tup,ymin,ymax,x):
 
