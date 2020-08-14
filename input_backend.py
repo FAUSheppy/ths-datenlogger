@@ -173,6 +173,9 @@ def read_in_file(path, backend=None, outsideData=False):
                    CFG("temperatur_outside_color"),
                    CFG("humidity_outside_color") ]
 
+        global line_colors
+        line_colors = colors
+
         plotSettings = [ CFG("plot_temperatur"),
                          CFG("plot_humidity"),
                          CFG("plot_dewcels"),
