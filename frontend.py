@@ -36,7 +36,9 @@ def main_repl(datapoints,path,date1=None,date2=None,done1=False,done2=False):
 
 def selection_repl(path):
     if path != None:
-        datapoints = input_backend.read_in_file(path)
+        outsideData    = input("Außentemperatur einzeichnen? (j/n)")
+        useOutsideData = outsideData.strip().lower() in [ "j", "y" ]
+        datapoints = input_backend.read_in_file(path, outsideData=useOutsideData)
         if CFG("debug_no_interactive"):
             plot_main.plot(datapoints,path)
             return None

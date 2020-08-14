@@ -8,15 +8,15 @@ def between_dates(t,date1,date2):
         else:
             return False
 
-def time_from_dbf(l,timeformat):
+def time_from_dbf(l, timeformat):
         timeformat=None #dont need that here
         offset_d = datetime(1970,1,1)-datetime(1900,1,1)
         shit_epoch = l*24*60*60 #days to seconds
         unix_epoch = datetime.fromtimestamp(shit_epoch)-offset_d
         return (unix_epoch-timedelta(days=2)+timedelta(hours=CFG("add_hours_to_input"))).replace(microsecond=0)
 
-def time_from_csv(l,timeformat):
-        return datetime.strptime(l,timeformat)
+def time_from_csv(l, timeformat):
+        return datetime.strptime(l, timeformat)
 
 def unix(dt):
     return dt.timestamp()

@@ -1,4 +1,6 @@
 *.png
+*.bak
+cache/
 *.dbf
 __py*
 *.swp

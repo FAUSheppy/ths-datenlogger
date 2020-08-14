@@ -35,13 +35,15 @@ def __plot(tup,datapoints,path,date1=None,date2=None):
         ls = CFG("plot_line_style")
         tup[FIGURE],tup[AXIS] = plt.subplots(1, 1)
 
-        for g in datapoints.values():
+        for key in datapoints.keys():
+                g = datapoints[key]
+                print(key)
                 #### Check if we are supposed to plot something ####
                 if not g.plot:
                         continue
                 #### GET AND CHECK TIMEFRAMES ####
                 x,y, = g.get_timeframe(tup[CALLBACK],date1,date2)
-                if len(x) <= 0 or len(y) <= 0:
+                if not x or not y or len(x) <= 0 or len(y) <= 0:
                     print("Warning: Empty series of data '%s' (wrong start/end time?)"%g.name)
                     continue
                 else:
@@ -52,13 +54,15 @@ def __plot(tup,datapoints,path,date1=None,date2=None):
                 #### GET LINE STYLES ####
                 legend_label = plot_graphutils.legend_box_contents(g.name,y)
                 tup[AXIS].plot(unix_x, y,ls=ls,lw=lw,marker="None", label=legend_label, color=g.color)
+                legacy_x_save = x
+                lagacy_y_save = y
         
         if NO_SERIES:
                 print("Error: no data, nothing to plot. cannot continue. exit.")
                 sys.exit(1)
 
         ## GRID ##
-        plot_graphutils.general_background_setup(tup,ymin,ymax,x)
+        plot_graphutils.general_background_setup(tup, ymin, ymax, legacy_x_save)
 
         ## using unix_x relys on unix_x to be the same for all plots ##
         if path == None:
