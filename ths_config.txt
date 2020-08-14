@@ -79,8 +79,8 @@ acceptable_temp_color  = blue
 humidity_color			 = red
 temperatur_color		 = blue
 dewcels_color			 = green
-temperatur_outside_color = cyan
-humidity_outside_color   = orange
+temperatur_outside_color = #339966
+humidity_outside_color   = magenta
 
 plot_line_width = 0.5
 plot_line_style = solid
