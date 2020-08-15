@@ -28,6 +28,8 @@ def get_keys(like=None):
 
 def change_cfg(key,value):
         global conf
+        if conf == None:
+                parse_config()
         confs = conf["plot"]
         v = str(value)
         key = str(key)

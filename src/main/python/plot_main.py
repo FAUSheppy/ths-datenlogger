@@ -19,16 +19,12 @@ import plot_imageutils
 import plot_timeutils
 
 
-def plot(datapoints,path=None,date1=None,date2=None):
+def plot(datapoints, path=None, date1=None, date2=None, forcePath=False):
         plotname = "" if CFG("name_of_plot") == "None" else CFG("name_of_plot")
         tup = [None,None,plot_timeutils.between_dates,plotname]
-        if CFG("enable_multicore_support"):
-                thread  = Process(target=__plot,args=(tup,datapoints,date1,date2))
-                thread.start()
-        else:
-                __plot(tup,datapoints,path,date1,date2)
+        return __plot(tup, datapoints, path, date1, date2, forcePath)
                         
-def __plot(tup,datapoints,path,date1=None,date2=None):
+def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
         NO_SERIES  = True
         x,y,ymin,ymax,unix_x,major_xticks = ( [] , [], -1 , -1 , [], [] )
         lw = CFG("plot_line_width")
@@ -67,8 +63,11 @@ def __plot(tup,datapoints,path,date1=None,date2=None):
         ## using unix_x relys on unix_x to be the same for all plots ##
         if path == None:
             path = open_file()
-
-        pic_path = output_path(path,date1,date2)
+        
+        if not forcePath:
+            pic_path = output_path(path,date1,date2)
+        else:
+            pic_path = path
         
 
         ## set resoltuion ##
@@ -82,6 +81,8 @@ def __plot(tup,datapoints,path,date1=None,date2=None):
 
         ### do operations on the finished png ###
         plot_imageutils.check_and_rotate(pic_path)
+
+        return pic_path
 
 def output_path(path,date1,date2):
         if date1 != None and date2 == None:

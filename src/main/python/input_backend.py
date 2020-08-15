@@ -31,7 +31,7 @@ class Data:
         '''Get time of last timestamp'''
         return max(self.times)
 
-    def get_timeframe(self, callback,date1=None,date2=None):
+    def get_timeframe(self, callback, date1=None, date2=None):
         out_x = []
         out_y = []
         i = 0
@@ -151,7 +151,7 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype):
             raise e
 
 
-def read_in_file(path, backend=None, outsideData=False):
+def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True, plotOutsideHum=True):
         '''Read in a file, add outside data if requested'''
 
         datapoints = dict()
@@ -179,8 +179,8 @@ def read_in_file(path, backend=None, outsideData=False):
         plotSettings = [ CFG("plot_temperatur"),
                          CFG("plot_humidity"),
                          CFG("plot_dewcels"),
-                         outsideData,
-                         outsideData ]
+                         plotOutsideTemp,
+                         plotOutsideHum ]
         
         assert(len(names) == len(colors) == len(identifiers) == len(plotSettings))
 
