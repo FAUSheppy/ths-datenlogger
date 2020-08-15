@@ -17,7 +17,7 @@ def getlimits_y(y):
         if y_min_height != 0 and y_min_height > ymax:
                 ymax = y_min_height
         y_start_val = CFG("yaxis_start_value")
-        if y_start_val < min(y) or CFG("yaxis_force_start_value"):
+        if y_start_val < min(y) or ( CFG("yaxis_force_start_value") and not min(y) < 0):
                 ymin=y_start_val
         else:
                 ymin=min(y)
