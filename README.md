@@ -9,6 +9,8 @@ This tool was developed to enable easy analysis of USB-Dataloggers that record h
     codecs
     dbfread
     PIL
+    PyQt5
+    fbs
 
 ## Supported Formats
 
@@ -16,6 +18,14 @@ This tool was developed to enable easy analysis of USB-Dataloggers that record h
 - .xls (Microsoft Excel)
 - .csv (Comma Separated Values) (UTF-8/ASCII/Latin-1)
 - Format not supported? Send me a sample file!
+
+## Run on Windows
+
+    pythonw.exe -m fbs run
+
+## Run on Linux
+
+    fbs run
 
 ## Output
 ![Plot](https://media.atlantishq.de/ths-plot-example.png)
