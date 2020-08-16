@@ -1,8 +1,7 @@
 requests
 language
 matplotlib
-codecs
 dbfread
-PIL
+pillow
 PyQt5
 fbs
