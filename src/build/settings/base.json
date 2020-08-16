@@ -1,0 +1,6 @@
+{
+    "app_name": "datelogger-gui",
+    "author": "Yannik Schmidt",
+    "main_module": "src/main/python/main.py",
+    "version": "0.0.0"
+}
