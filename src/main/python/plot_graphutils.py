@@ -12,32 +12,54 @@ import timeutils
 matplotlib.rc('font', **GLOBAL_FONT)
 
 def getlimits_y(y):
-        ymax = max(y)+CFG("empty_space_above_plot")
-        y_min_height = CFG("yaxis_minnimum_hight")
-        if y_min_height != 0 and y_min_height > ymax:
-                ymax = y_min_height
-        y_start_val = CFG("yaxis_start_value")
-        if y_start_val < min(y) or ( CFG("yaxis_force_start_value") and not min(y) < 0):
-                ymin=y_start_val
-        else:
-                ymin=min(y)
-        return (ymin,ymax)
+    '''Get tuple of (ymin, ymax) based on configuration'''
 
-def avg(array):
-        return sum(array)/float(len(array))
+    # calculate actual values #
+    ymax = max(y) + CFG("empty_space_above_plot")
+    y_min_height = CFG("yaxis_minnimum_hight")
+
+    # allow negative values when nessesary #
+    if y_min_height != 0 and y_min_height > ymax:
+        ymax = y_min_height
+    y_start_val = CFG("yaxis_start_value")
+
+    # force start value if set in configuration #
+    if y_start_val < min(y) or ( CFG("yaxis_force_start_value") and not min(y) < 0):
+        ymin = y_start_val
+    else:
+        ymin = min(y)
+        
+    return (ymin, ymax)
 
 def legend_box_contents(name, y):
+    '''Return a string with the formate content of the legend/caption'''
+
+    # capping values at 99 makes formating easier#
     if CFG("cap_values_at_99"):
-        y = [ min([el, 99.9]) for el in y ]
+        y = [ min( [el, 99.9] ) for el in y ]
+    
+    # add minimum values if configured #
     if CFG("show_min"):
         name += " min: {:4.1f},".format(min(y))
+
+    # add maximum values if configured #
     if CFG("show_max"):
         name += " max: {:4.1f},".format(max(y))
+    
+    # show average if configured #
     if CFG("show_avg"):
-        name += " Mittelwert: {:4.1f},".format(avg(y))
+        name += " Mittelwert: {:4.1f},".format(sum(y)/float(len(y)))
     return name.rstrip(",")    
 
 def general_background_setup(tup,ymin,ymax,x):
+    '''Setup the Canvas:
+            - set x/y scala limits
+            - draw warning lines/areas
+            - calculate and draw gridsetps
+            - calculate and draw x/y ticks
+            - draw labels
+            - draw caption
+        '''
 
     unix_x = [ el.timestamp() for el in x ]
 
@@ -45,86 +67,98 @@ def general_background_setup(tup,ymin,ymax,x):
     tup[AXIS].set_ylim( [ ymin, ymax ] )
     tup[AXIS].set_xlim( [ min(x).timestamp(), max(x).timestamp() ] )
 
+    ### draw warning lines/areas ###
     if CFG("draw_thresholds"):
-        hcrit=CFG("humidity_critical")
-        hwarn=CFG("humidity_warning")
-        tlow=CFG("acceptable_temp_low")
-        thigh=CFG("acceptable_temp_high")
-        tup[AXIS].axhline(y=CFG("target_temperatur"),ls=CFG("hline_line_style"),lw=CFG("hline_line_width"),color=CFG("acceptable_temp_color"))
-        tup[AXIS].axhline(y=hcrit,ls=CFG("hline_line_style"),lw=CFG("hline_line_width"),color=CFG("humidity_crit_color"))
-        tup[AXIS].axhspan(hwarn,hcrit,color=CFG("humidity_warning_color"),alpha=CFG("humidity_warning_alpha"))
-        tup[AXIS].axhspan(hcrit,ymax,color=CFG("humidity_crit_color"),alpha=CFG("humidity_crit_alpha"))
-        tup[AXIS].axhspan(tlow,thigh,color=CFG("acceptable_temp_color"),alpha=CFG("acceptable_temp_alpha"))
+
+        humCrit     = CFG("humidity_critical")
+        humWarn     = CFG("humidity_warning")
+        tempLow     = CFG("acceptable_temp_low")
+        tempHigh    = CFG("acceptable_temp_high")
+        tempOptimal = CFG("target_temperatur")
+        
+        hLineStyle = CFG("hline_line_style")
+        hLineWidth = CFG("hline_line_width")
+
+        tempOptimalColor = CFG("acceptable_temp_color")
+        tempOptimalAlpha = CFG("acceptable_temp_alpha")
+        humCritColor     = CFG("humidity_crit_color")
+        humWarnColor     = CFG("humidity_warning_color")
+        humCritAlpha     = CFG("humidity_crit_alpha")
+        humWarnAlpha     = CFG("humidity_warning_alpha")
+
+        tup[AXIS].axhline(y=tempOptimal, ls=hLineStyle, lw=hLineWidth, color=tempOptimalColor)
+        tup[AXIS].axhline(y=humCrit,     ls=hLineStyle, lw=hLineWidth, color=humCritColor)
+
+        tup[AXIS].axhspan(humWarn, humCrit,  color=humWarnColor,     alpha=humWarnAlpha)
+        tup[AXIS].axhspan(humCrit, ymax,     color=humCritColor,     alpha=humCritAlpha)
+        tup[AXIS].axhspan(tempLow, tempHigh, color=tempOptimalColor, alpha=tempOptimalAlpha)
     
-    #### GRID ####
+    #### setup grid ####
     major_xticks = gen_xticks_from_timeseries(x)
     minor_xticks = get_minor_xticks_from_major(major_xticks)
     if CFG("raster"):
-        grid(tup,major_xticks,ymin,ymax)
+        grid(tup, major_xticks, ymin, ymax)
     
-    #### XTICKS ####
+    #### setup xticks ####
     tup[AXIS].set_xticks(major_xticks)
     tup[AXIS].xaxis.set_major_formatter(ticker.FuncFormatter(xlabel_formater_callback))
     tup[AXIS].xaxis.set_major_locator(ticker.FixedLocator(major_xticks, nbins=None))
     tup[AXIS].xaxis.set_minor_locator(ticker.FixedLocator(minor_xticks, nbins=None))
-    tup[AXIS].xaxis.set_tick_params(which='minor',width=0.2,direction="out")
+    tup[AXIS].xaxis.set_tick_params(which='minor', width=0.2, direction="out")
     
     tup[AXIS].yaxis.set_major_locator(ticker.MultipleLocator(CFG("y_tick_interval")))
     tup[AXIS].yaxis.set_minor_locator(ticker.MultipleLocator(1))
-    tup[AXIS].yaxis.set_tick_params(which='minor',width=0.2,direction="out")
+    tup[AXIS].yaxis.set_tick_params(which='minor', width=0.2, direction="out")
 
-    tup[AXIS].tick_params(axis='x',which="major",labelsize=CFG("xticks_font_size"));
-    tup[AXIS].tick_params(axis='y',which="major",labelsize=CFG("yticks_font_size"));
+    tup[AXIS].tick_params(axis='x', which="major", labelsize=CFG("xticks_font_size"));
+    tup[AXIS].tick_params(axis='y', which="major", labelsize=CFG("yticks_font_size"));
                         
-    ## ROTATION XLABELS ##
+    ### roate xtick-labels to 45deg ###
     rotation=CFG("xticks_label_degree")
     if rotation > 0:
         plt.xticks(rotation=rotation,ha='right')
 
-    ## AXIS LABELS
-    ylabel_box = dict(boxstyle="square",facecolor='grey', alpha=0.4, edgecolor='black',lw=0.5)
+    ### setup axis labels ###
+    ylabel_box = dict(boxstyle="square", facecolor='grey', alpha=0.4, edgecolor='black', lw=0.5)
     xlabel_box = ylabel_box
     label_size = CFG("label_font_size")
     spacing=0.1
-    tup[AXIS].set_ylabel(CFG("y_label"),rotation='horizontal',size=label_size,bbox=ylabel_box)
-    tup[AXIS].yaxis.set_label_coords(0.045,0.970)
-    tup[AXIS].set_xlabel(CFG("x_label"),size=label_size,bbox=xlabel_box)
-    tup[AXIS].xaxis.set_label_coords(0.945,0.03)
+    tup[AXIS].set_ylabel(CFG("y_label"), rotation='horizontal', size=label_size, bbox=ylabel_box)
+    tup[AXIS].yaxis.set_label_coords(0.045, 0.970)
+    tup[AXIS].set_xlabel(CFG("x_label"), size=label_size, bbox=xlabel_box)
+    tup[AXIS].xaxis.set_label_coords(0.945, 0.03)
     
-    ## GENERAL LEGEND ##
+    ### setup caption ###
     legend_handle = tup[AXIS].legend(
-                    loc=CFG("legend_location"),
-                    edgecolor="inherit",
-                    fancybox=False,
-                    borderaxespad=spacing,
-                    prop={'family': 'monospace','size':CFG("legend_font_size")}
+                        loc=CFG("legend_location"),
+                        edgecolor="inherit",
+                        fancybox=False,
+                        borderaxespad=spacing,
+                        prop={'family': 'monospace','size':CFG("legend_font_size")}
                     )
     legend_handle.get_frame().set_linewidth(0.2)
-    #tup[AXIS].set_aspect(get_aspect_ratio(unix_x,ymin,ymax,major_xticks))
 
                 
-def get_aspect_ratio(ux,ymin,ymax,xticks):
-        ratio = 100
-        tmp = CFG("aspect_ratio")
-        if str(tmp) == "A4":
-            ratio = a4_aspect()
-        else:
-            ratio=tmp
-        magic_value = 3.25
-        return ratio * ( max(ux) - min(ux) ) / float(ymax - ymin + magic_value)
+def get_aspect_ratio(ux, ymin, ymax, xticks):
+    ratio = 100
+    tmp = CFG("aspect_ratio")
+    if str(tmp) == "A4":
+        ratio = ( 1/math.sqrt(2) ) * x
+    else:
+        ratio = tmp
+    magic_value = 3.25 # 2020 sheppy like: ?!??!??
+    return ratio * ( max(ux) - min(ux) ) / float(ymax - ymin + magic_value)
 
-def a4_aspect(x):
-        return ( 1/math.sqrt(2) ) * x
 
-def grid(tup,xticks,ymin,ymax):
+def grid(tup, xticks, ymin, ymax):
         lw = CFG("grid_line_width")
         ls = CFG("grid_line_style")
         color = CFG("grid_line_color")
         hour_mul = 24
-        expected_vlines = len(list(filter(lambda xt: xt%3600 < 60,xticks)))
-        safety_first = 60*60 +10
-        step = xticks[1]-xticks[0] 
-        if step < (24*3600)-safety_first:
+        expected_vlines = len(list(filter(lambda xt: xt % 3600 < 60, xticks)))
+        safety_first = 60 * 60 + 10
+        step = xticks[1] - xticks[0] 
+        if step < ( 24 * 3600 ) - safety_first:
             if expected_vlines <= 6:
                     hour_mul = 1
             elif expected_vlines <=12:
@@ -135,37 +169,37 @@ def grid(tup,xticks,ymin,ymax):
         for xt in xticks:
                 leck_mich = datetime.fromtimestamp(xt)
                 if leck_mich.hour == leck_mich.minute == leck_mich.second == 0:
-                    tup[AXIS].axvline(xt,ls="-",lw=CFG("major_line_width"),color=color)
+                    tup[AXIS].axvline(xt, ls="-", lw=CFG("major_line_width"), color=color)
                 else:
-                    tup[AXIS].axvline(xt,ls=ls,lw=lw,color=color)
+                    tup[AXIS].axvline(xt, ls=ls, lw=lw, color=color)
         ## HLINES ##
         y_interval = CFG("raster_hline_prefered_interval")
         cur = ymin
         while cur < ymax:
                 cur += y_interval
-                tup[AXIS].axhline(cur,ls=ls,lw=lw,color=color)
+                tup[AXIS].axhline(cur, ls=ls, lw=lw, color=color)
 
 def find_step(step,x,total_xticks):
         intervals = parse_possible_intervals()
         start = min(x)
         if CFG("always_allow_days_as_xticks") and step > timedelta(days=1)/2:
-                step = timedelta(days=round(step.days+1))
-                start = min(x).replace(hour=0,second=0,minute=0)
-                return (start,step)
+                step = timedelta(days=round(step.days + 1))
+                start = min(x).replace(hour=0, second=0, minute=0)
+                return (start, step)
         
         min_delta_step = timedelta(days=1)      # the actual step that has the lowest delta
-        min_delta      = timedelta(days=1000)   # the delta o thus step
+        min_delta      = timedelta(days=1000)   # the delta of thus step
         for s in intervals:
-            delta = max(s,step)-min(s,step)
+            delta = max(s, step)-min(s, step)
             if delta < min_delta:
                 min_delta_step = s
                 min_delta      = delta
 
         step  = min_delta_step
-        start = timeutils.round_time_to_step(start,step)
+        start = timeutils.round_time_to_step(start, step)
 
-        warn_on_too_much_xticks(x,total_xticks,step)
-        return (start,step)
+        warn_on_too_much_xticks(x, total_xticks, step)
+        return (start, step)
 
 def parse_possible_intervals():
         intervals = CFG("acceptable_x_intervals")
@@ -176,7 +210,7 @@ def parse_possible_intervals():
             except ValueError:
                 raise ValueError("'acceptable_x_intervals' muss die Form 'Zahl[s(econds),m(minutes),h(ours),d(days)]' haben!")
             except Exception:
-                raise ValueError("invalid intervals for x_labels %s [index out of bounds], did you write something like this ',,,,' ?]"%str(intervals))
+                raise ValueError("invalid intervals for x_labels %s [index out of bounds], did you write something like this ',,,,' ?]" % str(intervals))
             if s.endswith("s"):
                 if 60 % st != 0:
                     raise ValueError("interval must fit to next bigger interval so basicly for hours 24%interval==0")
@@ -192,7 +226,8 @@ def parse_possible_intervals():
             elif s.endswith("d"):
                 parsed_intervals += [timedelta(days=st)]
             else:
-                raise ValueError("invalide Zeitspezifizierer in %s (muss, s,m,h oder d sein)"%str(intervals))
+                raise ValueError("Invalide Zeitspezifizierer in %s (muss, s,m,h oder d sein)" % str(intervals))
+            
         return parsed_intervals
 
 def warn_on_too_much_xticks(x,total_xticks,step):
