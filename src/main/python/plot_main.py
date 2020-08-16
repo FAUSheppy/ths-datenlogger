@@ -44,7 +44,7 @@ def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
                     continue
                 else:
                     NO_SERIES = False
-                    unix_x = list(map(plot_timeutils.unix,x))
+                    unix_x = [ el.timestamp() for el in x]
                     ymin,ymax = plot_graphutils.getlimits_y(y)
 
                 #### GET LINE STYLES ####

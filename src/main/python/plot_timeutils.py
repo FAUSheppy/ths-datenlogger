@@ -18,9 +18,6 @@ def time_from_dbf(l, timeformat):
 def time_from_csv(l, timeformat):
         return datetime.strptime(l, timeformat)
 
-def unix(dt):
-    return dt.timestamp()
-
 def round_time_to_step(start,step):
         start  += step / 2
         discard = timedelta(days=0)

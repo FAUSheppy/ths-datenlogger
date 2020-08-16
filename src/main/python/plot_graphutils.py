@@ -39,11 +39,11 @@ def legend_box_contents(name, y):
 
 def general_background_setup(tup,ymin,ymax,x):
 
-    unix_x = list(map(plot_timeutils.unix,x))
+    unix_x = [ el.timestamp() for el in x ]
 
     ### SET AXIS LIMITS ###
-    tup[AXIS].set_ylim([ymin,ymax])
-    tup[AXIS].set_xlim([plot_timeutils.unix(min(x)),plot_timeutils.unix(max(x))])
+    tup[AXIS].set_ylim( [ ymin, ymax ] )
+    tup[AXIS].set_xlim( [ min(x).timestamp(), max(x).timestamp() ] )
 
     if CFG("draw_thresholds"):
         hcrit=CFG("humidity_critical")
@@ -223,7 +223,7 @@ def gen_xticks_from_timeseries(x):
         xticks = []
         xmax += step*CFG("add_x_labels_at_end")
         while cur < xmax:
-            xticks += [plot_timeutils.unix(cur)]
+            xticks += [cur.timestamp()]
             cur+=step
         return xticks
 
