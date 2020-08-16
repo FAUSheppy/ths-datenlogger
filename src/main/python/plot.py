@@ -3,7 +3,6 @@ import sys
 from config_parse import CFG
 from constants import *
 from datetime import datetime, timedelta
-from frontend_utils import open_file
 from constants      import *
 
 import math
@@ -65,7 +64,7 @@ def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
             path = open_file()
         
         if not forcePath:
-            pic_path = output_path(path,date1,date2)
+            pic_path = output_path(path, date1, date2)
         else:
             pic_path = path
         

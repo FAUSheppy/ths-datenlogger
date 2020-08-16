@@ -8,7 +8,7 @@ import matplotlib.dates
 import matplotlib.ticker as ticker
 from constants import *
 import math
-import plot_timeutils
+import timeutils
 matplotlib.rc('font', **GLOBAL_FONT)
 
 def getlimits_y(y):
@@ -162,7 +162,7 @@ def find_step(step,x,total_xticks):
                 min_delta      = delta
 
         step  = min_delta_step
-        start = plot_timeutils.round_time_to_step(start,step)
+        start = timeutils.round_time_to_step(start,step)
 
         warn_on_too_much_xticks(x,total_xticks,step)
         return (start,step)
