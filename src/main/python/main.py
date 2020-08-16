@@ -15,7 +15,7 @@ import sys
 import datetime as dt
 
 import input_backend
-import plot_main
+import plot
 import config_parse as cp
 
 class WidgetGallery(QDialog):
@@ -180,7 +180,7 @@ class WidgetGallery(QDialog):
         endDateTime   = dt.datetime.combine(self.endDateEdit.date().toPyDate(), zeroTime)
         endDateTime += endTimeOffset
 
-        self.truePath = plot_main.plot(self.datapoints, path=target,
+        self.truePath = plot.plot(self.datapoints, path=target,
                             date1=startDateTime,
                             date2=endDateTime,
                             forcePath=forcePath)

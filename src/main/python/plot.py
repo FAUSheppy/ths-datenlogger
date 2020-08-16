@@ -15,13 +15,13 @@ import matplotlib.dates
 import matplotlib.ticker as ticker
 
 import plot_graphutils
-import plot_imageutils
-import plot_timeutils
+import imageutils
+import timeutils
 
 
 def plot(datapoints, path=None, date1=None, date2=None, forcePath=False):
         plotname = "" if CFG("name_of_plot") == "None" else CFG("name_of_plot")
-        tup = [None,None,plot_timeutils.between_dates,plotname]
+        tup = [None,None,timeutils.between_dates,plotname]
         return __plot(tup, datapoints, path, date1, date2, forcePath)
                         
 def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
@@ -80,7 +80,7 @@ def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
         tup[FIGURE].savefig(pic_path,dpi=DPI,pad_inches=0.1,bbox_inches='tight',transparent=CFG("transparent_background"))
 
         ### do operations on the finished png ###
-        plot_imageutils.check_and_rotate(pic_path)
+        imageutils.check_and_rotate(pic_path)
 
         return pic_path
 

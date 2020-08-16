@@ -5,7 +5,7 @@ import requests
 import os
 
 from dbfread import DBF
-import plot_timeutils
+import timeutils
 
 line_colors = ['b', 'r', 'g', 'c', 'm', 'y']
 tname       = CFG("temperatur_plot_name")
@@ -142,7 +142,7 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype):
 
         try:
             timeStr, value = l.split(";")
-            timestamp = plot_timeutils.time_from_csv(timeStr, CFG("nff_input_timeformat"))
+            timestamp = timeutils.time_from_csv(timeStr, CFG("nff_input_timeformat"))
 
             datapoints[plotNameKey].data  += [float(value.replace(",","."))]
             datapoints[plotNameKey].times += [timestamp]
@@ -223,7 +223,7 @@ def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True, pl
 
 def dbfread(path,datapoints,pt,ph,pd):
         for record in DBF(path):
-            parse_line(datapoints,record,'DATETIME',[ ('TEMPCELS',pt) , ('HUMIDITY',ph) , ('DEWCELS',pd) ] ,plot_timeutils.time_from_dbf)
+            parse_line(datapoints,record,'DATETIME',[ ('TEMPCELS',pt) , ('HUMIDITY',ph) , ('DEWCELS',pd) ] ,timeutils.time_from_dbf)
 
 def csvread(path,datapoints,pt,ph,pd):
         count = 0;
@@ -240,7 +240,7 @@ def csvread(path,datapoints,pt,ph,pd):
                         row["hum"]          = float(row_arg[4])
                         row["taupunkt"]     = float(row_arg[5])
                         parse_line(datapoints,row,'datetime',[ ('temp',pt) , ('hum',ph) , ('taupunkt',pd) ],\
-                                        plot_timeutils.time_from_csv,timeformat="%d-%m-%Y%H:%M:%S")
+                                        timeutils.time_from_csv,timeformat="%d-%m-%Y%H:%M:%S")
         print("Info: Ignored %d lines at beginning of file"%count)
 
 import codecs
@@ -260,7 +260,7 @@ def csvread_txt(path,datapoints,pt,ph,pd):
                         row["hum"]          = float(row_arg[7])
                         row["taupunkt"]     = 0.0
                         parse_line(datapoints,row,'datetime',[ ('temp',pt) , ('hum',ph) , ('taupunkt',pd) ],\
-                                        plot_timeutils.time_from_csv,timeformat="%d-%m-%Y_%H:%M")
+                                        timeutils.time_from_csv,timeformat="%d-%m-%Y_%H:%M")
         except (UnicodeError, IndexError):
             count = csvread_txt_fallback(path,datapoints,pt,ph,pd)
 
@@ -283,7 +283,7 @@ def csvread_txt_fallback(path,datapoints,pt,ph,pd):
                 row["hum"]          = float(hum)
                 row["taupunkt"]     = 0.0
                 parse_line(datapoints,row,'datetime',[ ('temp',pt) , ('hum',ph) , ('taupunkt',pd) ],\
-                                plot_timeutils.time_from_csv,timeformat="%d-%m-%Y_%H:%M")
+                                timeutils.time_from_csv,timeformat="%d-%m-%Y_%H:%M")
     return count
 
 
