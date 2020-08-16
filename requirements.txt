@@ -1,0 +1,8 @@
+requests
+language
+matplotlib
+codecs
+dbfread
+PIL
+PyQt5
+fbs
