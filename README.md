@@ -16,6 +16,9 @@ This tool was developed to enable easy analysis of USB-Dataloggers that record h
 
     fbs run
 
+## Interface
+![QT-Interface](https://media.atlantishq.de/qt_ths_datenlogger.png)
+
 ## Output
 ![Plot](https://media.atlantishq.de/ths-plot-example.png)
 
