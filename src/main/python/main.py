@@ -152,8 +152,9 @@ class WidgetGallery(QDialog):
             forcePath = True
 
         # workaround for checkboxes changed #
+        outsideDataNeeded = self.boxOTemp.isChecked() or self.boxOHumidity.isChecked()
         self.datapoints = input_backend.read_in_file(self.srcFileString, 
-                                                outsideData=True,
+                                                outsideData=outsideDataNeeded,
                                                 plotOutsideTemp=self.boxOTemp.isChecked(),
                                                 plotOutsideHum=self.boxOHumidity.isChecked())
 
