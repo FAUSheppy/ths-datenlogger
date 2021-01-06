@@ -143,8 +143,13 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype):
         try:
             timeStr, value = l.split(";")
             timestamp = timeutils.time_from_csv(timeStr, CFG("nff_input_timeformat"))
+            cleanFloat = value.replace(",",".")
 
-            datapoints[plotNameKey].data  += [float(value.replace(",","."))]
+            # - means the value is missing in the external data set, this is common #
+            if cleanFloat.strip() == "-" or cleanFloat.strip() == "+":
+                continue
+
+            datapoints[plotNameKey].data  += [float(cleanFloat)]
             datapoints[plotNameKey].times += [timestamp]
         except ValueError as e:
             print(l)
