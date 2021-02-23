@@ -1,84 +1,60 @@
-# Ich bin ein Kommentar, das Programm ignoriert Zeilen die mit '#' beginnen.
-# Die Zeile '[plot] darf NICHT gelöscht oder verändert werden!
-
 [plot]
-plot_humidity 	= ja
-plot_temperatur = ja
-plot_dewcels	= nein
-show_avg 		= ja
-show_min 	 	= ja
-show_max 	 	= ja
+plot_humidity   = yes
+plot_temperatur = yes
+plot_dewcels    = no
+show_avg        = yes
+show_min        = yes
+show_max        = yes
 
-humidity_critical		= 55
-humidity_warning		= 50
-acceptable_temp_low		= 18
-acceptable_temp_high	= 22
-target_temperatur		= 20
+humidity_critical    = 55
+humidity_warning     = 50
+acceptable_temp_low  = 18
+acceptable_temp_high = 22
+target_temperatur    = 20
 
-temperatur_plot_name	= Innenlufttemperatur
-humidity_plot_name		= rel. Luftfeuchtigkeit
+temperatur_plot_name         = Innenlufttemperatur
+humidity_plot_name           = rel. Luftfeuchtigkeit
 temperatur_outside_plot_name = Außenlufttemperatur
-humidity_outside_plot_name	 = rel. (a) Luftfeuchtigkeit
-dewcels_plot_name		= Taupunkt
-y_label					= Temp./r.L.
-x_label					= Datum/Uhrzeit
-font					= calibri
+humidity_outside_plot_name   = rel. (a) Luftfeuchtigkeit
+dewcels_plot_name            = Taupunkt
+y_label                      = Temp./r.L.
+x_label                      = Datum/Uhrzeit
 
-image_rotation          = 90
-xticks_label_degree     = 45
-# in milli-inches
-#fig_x_height_inches       = 23380
-#fig_y_height_inches       = 16532
-fig_x_height_inches       = 12100
-fig_y_height_inches       =  8075
+font                = calibri
+image_rotation      = 90
+xticks_label_degree = 45
 
 timeformat_x_axis       = '$d.$m, $H:$M'
 
-global_text_size		= 10
+global_text_size        = 10
 xticks_font_size        = 10
 yticks_font_size        = 10
 legend_font_size        = 8
 label_font_size         = 8
 
-always_restart          = yes
-
-legend_location		    = upper right
+legend_location         = upper right
 transparent_background  = no
 acceptable_x_intervals  = 1m,5m,10m,30m,1h,2h,4h,6h
-name_of_plot	        = None
+name_of_plot            = None
 
-enable_automatic_date_correction = yes
+empty_space_above_plot = 10
+yaxis_minnimum_hight   = 95
+yaxis_start_value      = 0
+yaxis_force_start_value = False
 
-# history options
-history_file_length  = 1000
-history_show         = 10
-history_double_col   = yes
+cap_values_at_99        = True
 
-###### PLOT Styles (Farben, Scala, Linestyles) ######
-empty_space_above_plot  		= 10
-yaxis_minnimum_hight			= 95
-yaxis_start_value				= 0
+humidity_crit_alpha     = 0.35
+humidity_warning_alpha  = 0.35
+acceptable_temp_alpha   = 0.20
 
-# True:  die Y-Achse beginnt auch bei xaxis_start_value wenn dadurch Werte nicht angezeit werden
-# False: wenn ein Wert im plot kleiner xaxis_start_value ist beginnt die Y-Achse beim kleinsten Wert im Plot
-yaxis_force_start_value			= False
-# cap all values at two digits to prevent formating problems
-cap_values_at_99                = True
-
-# ein höheres alpha für zu einer stärkeren Sättigung der Hintergrundfarbe (0 und es ist ganz weg)
-humidity_crit_alpha		= 0.35
-humidity_warning_alpha 	= 0.35
-acceptable_temp_alpha 	= 0.20
-
-# Farben: cyan, yellow, green, red, blue, black, white, grey oder RGBA-Wert
-humidity_crit_color	   = red
+humidity_crit_color    = red
 humidity_warning_color = yellow
 acceptable_temp_color  = blue
 
-# Farbe der linie des graphen
-humidity_color			 = red
-temperatur_color		 = blue
-dewcels_color			 = green
+humidity_color           = red
+temperatur_color         = blue
+dewcels_color            = green
 temperatur_outside_color = #339966
 humidity_outside_color   = magenta
 
@@ -93,49 +69,38 @@ grid_line_style = :
 grid_line_width = 0.15
 grid_line_color = black
 
-raster 			= True
-draw_thresholds	= True
+raster             = True
+draw_thresholds    = True
 
 y_tick_interval                 = 5
 raster_hline_prefered_interval  = 5
 prefered_total_xticks           = 24
 major_line_width                = 0.5
 minor_xticks_per_major          = 5
-raster_minimum_hlines		    = 10
+raster_minimum_hlines           = 10
 
 add_hours_to_input              = 1
 add_x_labels_at_end             = 1
 
-### NFF Data URLs ###
-outside_data_url = "http://umweltdaten.nuernberg.de/csv/wetterdaten/messstation-nuernberg-flugfeld/archiv/csv-export/SUN/nuernberg-flugfeld/{dtype}/individuell/{fromDate}/{toDate}/export.csv"
-dtype_temperatur = "lufttemperatur-aussen"
-dtype_humidity   = "luftfeuchte"
-nff_url_timeformat = "%%d.%%m.%%Y"
+outside_data_url     = "http://umweltdaten.nuernberg.de/csv/wetterdaten/messstation-nuernberg-flugfeld/archiv/csv-export/SUN/nuernberg-flugfeld/{dtype}/individuell/{fromDate}/{toDate}/export.csv"
+dtype_temperatur     = "lufttemperatur-aussen"
+dtype_humidity       = "luftfeuchte"
+nff_url_timeformat   = "%%d.%%m.%%Y"
 nff_input_timeformat = "%%d.%%m.%%Y %%H:%%M"
 
-###### DEBUGGING ######
-no_ask_date_input           = yes
-input_filename              = "LOG32TH_20010101_2020-06-30T131045.DBF"
-use_input_filename          = yes
-debug_no_interactive        = no
-terminate_on_warning        = no
-terminate_on_missing_input_file = True
-terminate_on_fail               = True
-default_source_path         = test_data/
-default_target_dir          = UseSourceDir
-
-###### THINGS THERE IS REALLY NO REASON TO CHANGE ######
 plot_temperatur_key         = TEMP
-plot_humidity_key 	        = HUMIDITY
-plot_dewcels_key	        = TAU_P
+plot_humidity_key           = HUMIDITY
+plot_dewcels_key            = TAU_P
 plot_outside_temperatur_key = O_TEMP
-plot_outside_humidity_key	= O_HUMIDITY
+plot_outside_humidity_key   = O_HUMIDITY
 always_allow_days_as_xticks = yes
 language                    = DE
 aspect_ratio                = A4
 use_gui_backend             = Agg
-enable_multicore_support 	= False
+enable_multicore_support    = False
 outfile_resolution_in_dpi   = 250
-# <= what stepsize should datapoints be combined (s)
 combine_data_points         = 1
 cache_dir                   = "./cache/"
+fig_x_height_inches         = 12100
+fig_y_height_inches         =  8075
+default_target_dir          = UseSourceDir
