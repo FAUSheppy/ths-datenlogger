@@ -174,7 +174,7 @@ def grid(tup, xticks, ymin, ymax):
                     tup[AXIS].axvline(xt, ls=ls, lw=lw, color=color)
         ## HLINES ##
         y_interval = CFG("raster_hline_prefered_interval")
-        cur = ymin
+        cur = cur = int(ymin) - (int(ymin) % y_interval)
         while cur < ymax:
                 cur += y_interval
                 tup[AXIS].axhline(cur, ls=ls, lw=lw, color=color)
