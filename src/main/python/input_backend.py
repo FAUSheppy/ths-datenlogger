@@ -221,9 +221,6 @@ def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True, pl
             processExternalData(datapoints, pto, fromTime, toTime, CFG("dtype_temperatur"))
             processExternalData(datapoints, pho, fromTime, toTime, CFG("dtype_humidity"))
 
-        # sanity check result #
-        check_read_in(datapoints)
-
         return datapoints
 
 def dbfread(path,datapoints,pt,ph,pd):
@@ -290,18 +287,3 @@ def csvread_txt_fallback(path,datapoints,pt,ph,pd):
                 parse_line(datapoints,row,'datetime',[ ('temp',pt) , ('hum',ph) , ('taupunkt',pd) ],\
                                 timeutils.time_from_csv,timeformat="%d-%m-%Y_%H:%M")
     return count
-
-
-def check_read_in(datapoints):
-        good = False
-        for v in datapoints.values():
-            if len(v.times) != len(v.data):
-                print("more timestamps than data (or visa versa), this indicates that the file is corrupted, cannot continue")
-                good = False
-                break
-            if len(v.times) > 1:
-                good = True
-        if not good:
-            input("reading input file failed for an unknown reason, <ENTER> to exit")
-            import sys
-            sys.exit(1)
