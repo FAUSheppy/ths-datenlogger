@@ -153,10 +153,17 @@ class WidgetGallery(QDialog):
 
         # workaround for checkboxes changed #
         outsideDataNeeded = self.boxOTemp.isChecked() or self.boxOHumidity.isChecked()
-        self.datapoints = input_backend.read_in_file(self.srcFileString, 
+        self.datapoints, error = input_backend.read_in_file(self.srcFileString,
                                                 outsideData=outsideDataNeeded,
                                                 plotOutsideTemp=self.boxOTemp.isChecked(),
                                                 plotOutsideHum=self.boxOHumidity.isChecked())
+
+        if error:
+            errorBox = QMessageBox(self)
+            errorBox.setAttribute(PyQt5.QtCore.Qt.WA_DeleteOnClose)
+            errorBox.setText(self.localization.warning)
+            errorBox.setDetailedText(error)
+            errorBox.show()
 
         # build dates #
         try:
@@ -212,7 +219,7 @@ class WidgetGallery(QDialog):
         waitDialog.setText(self.localization.wait_dialog_text)
         waitDialog.show()
         try:
-            self.datapoints = input_backend.read_in_file(self.srcFileString, 
+            self.datapoints, error = input_backend.read_in_file(self.srcFileString,
                                                     outsideData=False,
                                                     plotOutsideTemp=False,
                                                     plotOutsideHum=False)

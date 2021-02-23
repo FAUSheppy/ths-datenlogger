@@ -3,6 +3,7 @@ from config_parse import CFG
 from datetime import datetime, timedelta
 import requests
 import os
+import localization.de as de
 
 from dbfread import DBF
 import timeutils
@@ -131,6 +132,7 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype):
             content = f.read()
 
     skipBecauseFirstLine = True
+    error = None
     for l in content.split("\n"):
         if not ";" in l:
             continue
@@ -152,8 +154,10 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype):
             datapoints[plotNameKey].data  += [float(cleanFloat)]
             datapoints[plotNameKey].times += [timestamp]
         except ValueError as e:
-            print(l)
-            raise e
+            error = de.warning_ext_data
+
+    # return a warning indication for qt #
+    return error
 
 
 def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True, plotOutsideHum=True):
@@ -213,15 +217,22 @@ def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True, pl
                 raise NotImplementedError("Cannot determine filetype, cannot continue. Exit.")
         
         # if nessesary download and process external data #
+        error = None
         if outsideData:
 
             fromTime = datapoints[CFG("plot_temperatur_key")].getFirstTime()
             toTime   = datapoints[CFG("plot_temperatur_key")].getLastTime()
 
-            processExternalData(datapoints, pto, fromTime, toTime, CFG("dtype_temperatur"))
-            processExternalData(datapoints, pho, fromTime, toTime, CFG("dtype_humidity"))
+            error1 = processExternalData(datapoints, pto, fromTime, toTime, CFG("dtype_temperatur"))
+            error2 = processExternalData(datapoints, pho, fromTime, toTime, CFG("dtype_humidity"))
 
-        return datapoints
+            # pass on warnings #
+            if error1:
+                error = error1;
+            else:
+                error = error2
+
+        return (datapoints, error)
 
 def dbfread(path,datapoints,pt,ph,pd):
         for record in DBF(path):
