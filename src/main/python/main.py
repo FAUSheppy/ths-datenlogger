@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget, QFileDialog, QDateEdit, QMessageBox)
+        QVBoxLayout, QWidget, QFileDialog, QDateEdit, QMessageBox, QTextBrowser)
 
 import localization.de as de
 import sys
@@ -35,12 +35,14 @@ class WidgetGallery(QDialog):
         self.createFileSelection()
         self.createDateSelection()
         self.createCheckboxArea()
+        self.createInfoOutputSection()
 
         mainLayout = QGridLayout()
         mainLayout.addWidget(self.fileSelectionGroup, 1, 0)
         mainLayout.addWidget(self.dateSelectionGroupBox, 2, 0)
         mainLayout.addWidget(self.checkboxGroup, 3, 0)
         mainLayout.addWidget(self.startSection, 4, 0)
+        mainLayout.addWidget(self.infoOutputSection, 5, 0)
 
         self.setLayout(mainLayout)
 
@@ -58,6 +60,17 @@ class WidgetGallery(QDialog):
         layout.addWidget(self.buttonGo)
 
         self.startSection.setLayout(layout)
+
+    def createInfoOutputSection(self):
+        '''Generate Aread containing progress, error and warning outputs'''
+
+        self.infoOutputSection = QGroupBox(self.localization.infoOutput)
+        self.infoTextBox = QTextBrowser()
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.infoTextBox)
+
+        self.infoOutputSection.setLayout(layout)
 
     def createFileSelection(self):
         '''Generate the area containing the file selectors and go button'''
@@ -140,6 +153,7 @@ class WidgetGallery(QDialog):
         '''Run generation with selected file and options'''
 
         # set save target if nessesary #
+        self.infoTextBox.clear()
         self.buttonGo.setText(self.localization.button_go_wait)
         self.buttonGo.setDisabled(True)
         self.repaint()
@@ -153,17 +167,11 @@ class WidgetGallery(QDialog):
 
         # workaround for checkboxes changed #
         outsideDataNeeded = self.boxOTemp.isChecked() or self.boxOHumidity.isChecked()
-        self.datapoints, error = input_backend.read_in_file(self.srcFileString,
+        self.datapoints = input_backend.read_in_file(self.srcFileString,
                                                 outsideData=outsideDataNeeded,
                                                 plotOutsideTemp=self.boxOTemp.isChecked(),
-                                                plotOutsideHum=self.boxOHumidity.isChecked())
-
-        if error:
-            errorBox = QMessageBox(self)
-            errorBox.setAttribute(PyQt5.QtCore.Qt.WA_DeleteOnClose)
-            errorBox.setText(self.localization.warning)
-            errorBox.setDetailedText(error)
-            errorBox.show()
+                                                plotOutsideHum=self.boxOHumidity.isChecked(),
+                                                qtTextBrowser=self.infoTextBox)
 
         # build dates #
         try:
@@ -218,11 +226,13 @@ class WidgetGallery(QDialog):
         waitDialog.setAttribute(PyQt5.QtCore.Qt.WA_DeleteOnClose)
         waitDialog.setText(self.localization.wait_dialog_text)
         waitDialog.show()
+
         try:
-            self.datapoints, error = input_backend.read_in_file(self.srcFileString,
+            self.datapoints = input_backend.read_in_file(self.srcFileString,
                                                     outsideData=False,
                                                     plotOutsideTemp=False,
-                                                    plotOutsideHum=False)
+                                                    plotOutsideHum=False,
+                                                    qtTextBrowser=self.infoTextBox)
         except Exception as e:
             waitDialog.close()
             errorBox = QMessageBox(self)
