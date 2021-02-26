@@ -199,10 +199,13 @@ class WidgetGallery(QDialog):
         self.truePath = plot.plot(self.datapoints, path=target,
                             date1=startDateTime,
                             date2=endDateTime,
-                            forcePath=forcePath)
+                            forcePath=forcePath,
+                            qtTextBrowser=self.infoTextBox)
 
         self.buttonGo.setText(self.localization.button_go)
         self.buttonGo.setDisabled(False)
+
+        self.infoTextBox.append(self.localization.success)
 
         doneDialog = QMessageBox(self)
         doneDialog.setAttribute(PyQt5.QtCore.Qt.WA_DeleteOnClose)
@@ -222,10 +225,7 @@ class WidgetGallery(QDialog):
         if not self.srcFileString:
             return
 
-        waitDialog = QMessageBox(self)
-        waitDialog.setAttribute(PyQt5.QtCore.Qt.WA_DeleteOnClose)
-        waitDialog.setText(self.localization.wait_dialog_text)
-        waitDialog.show()
+        self.infoTextBox.append(self.localization.testing_input)
 
         try:
             self.datapoints = input_backend.read_in_file(self.srcFileString,
@@ -234,7 +234,6 @@ class WidgetGallery(QDialog):
                                                     plotOutsideHum=False,
                                                     qtTextBrowser=self.infoTextBox)
         except Exception as e:
-            waitDialog.close()
             errorBox = QMessageBox(self)
             errorBox.setAttribute(PyQt5.QtCore.Qt.WA_DeleteOnClose)
             errorBox.setText(self.localization.error_read_in)
@@ -242,7 +241,6 @@ class WidgetGallery(QDialog):
             errorBox.show()
             return
 
-        waitDialog.close()
 
         start = self.datapoints[cp.CFG("plot_temperatur_key")].getFirstTime()
         self.startDateEdit.setDateTime(start)
@@ -257,6 +255,8 @@ class WidgetGallery(QDialog):
         self.endDateEdit.lineEdit().setDisabled(False)
         self.startTimeEdit.setDisabled(False)
         self.endTimeEdit.setDisabled(False)
+
+        self.infoTextBox.append(self.localization.testing_input_suc)
 
     def selectTargetFile(self):
         '''Function to select a target-file'''

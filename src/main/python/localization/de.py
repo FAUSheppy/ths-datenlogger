@@ -37,3 +37,7 @@ info_output_path    = "INFO: Output wird gespeichert nach: {}"
 
 # imageutils.py
 info_divergence     = "INFO: Seitenverhältnisabweichung zu A4: {:.2f}%"
+
+success             = "INFO: Fertig."
+testing_input       = "Info: Eingabedatei wird geprüft..."
+testing_input_suc   = "Info: Eingabedatei akzeptiert."
