@@ -27,6 +27,7 @@ class WidgetGallery(QDialog):
         self.srcFileString    = ""
         self.targetFileString = ""
         self.truePath = None
+        self.firstRun = True
 
         styleComboBox = QComboBox()
         styleComboBox.addItems(QStyleFactory.keys())
@@ -218,14 +219,20 @@ class WidgetGallery(QDialog):
     def selectSrcFile(self):
         '''Function to select a src-file'''
 
+        if not self.firstRun:
+            targetDir = "" # meaning the last one opened
+        else:
+            targetDir = cp.CFG("default_source_dir")
+
         self.srcFileString = QFileDialog.getOpenFileName(self, self.localization.src_file_dialog, 
-                        "", "Data-Files (*.txt *.csv *.dbf)")[0]
+                        targetDir, "Data-Files (*.txt *.csv *.dbf)")[0]
         self.srcFileName.setText(self.srcFileString)
 
         if not self.srcFileString:
             return
 
         self.infoTextBox.append(self.localization.testing_input)
+        self.firstRun = False
 
         try:
             self.datapoints = input_backend.read_in_file(self.srcFileString,
