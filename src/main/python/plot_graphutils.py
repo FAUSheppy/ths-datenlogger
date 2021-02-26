@@ -31,8 +31,16 @@ def getlimits_y(y):
         
     return (ymin, ymax)
 
-def legend_box_contents(name, y):
+def legend_box_contents(name, y, anyValueNegative):
     '''Return a string with the formate content of the legend/caption'''
+
+    padding = 4
+    if anyValueNegative:
+        padding = 5
+
+    minFormatString = " min: {:" + str(padding) + ".1f},"
+    maxFormatString = " max: {:" + str(padding) + ".1f},"
+    avgFormatString = " Mittelwert: {:" + str(padding) + ".1f},"
 
     # capping values at 99 makes formating easier#
     if CFG("cap_values_at_99"):
@@ -40,15 +48,15 @@ def legend_box_contents(name, y):
     
     # add minimum values if configured #
     if CFG("show_min"):
-        name += " min: {:4.1f},".format(min(y))
+        name += minFormatString.format(min(y))
 
     # add maximum values if configured #
     if CFG("show_max"):
-        name += " max: {:4.1f},".format(max(y))
+        name += maxFormatString.format(max(y))
     
     # show average if configured #
     if CFG("show_avg"):
-        name += " Mittelwert: {:4.1f},".format(sum(y)/float(len(y)))
+        name += avgFormatString.format(sum(y)/float(len(y)))
     return name.rstrip(",")    
 
 def general_background_setup(tup,ymin,ymax,x):
