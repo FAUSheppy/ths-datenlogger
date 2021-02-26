@@ -283,7 +283,7 @@ def csvread_txt(path,datapoints,pt,ph,pd):
 def csvread_txt_fallback(path,datapoints,pt,ph,pd):
     '''fallback for different format and encoding of txt'''
     count = 0
-    with codecs.open(path, "r",encoding="ISO8859_2", errors='repalce') as f:
+    with codecs.open(path, "r",encoding="ISO8859_2", errors='replace') as f:
         for l in f:
             if any(s in l for s in ["Logger","Datenquelle","Sensortyp","Einheit","Daten"]):
                 count += 1
