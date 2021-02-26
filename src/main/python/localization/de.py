@@ -29,3 +29,11 @@ special_err_1       = "Zeitstempelanzahl stimmt nicht mit Datensatzzahl überein
 warn_no_data        = "Warnung, keine Daten für {}"
 pg_request          = "Downloading: {}"
 info_ig_lines       = "INFO: Ignoriere {} Zeilen ohne Daten am Anfang der Datei"
+
+# plot.py
+warn_empty_series   = "WARN: Leere Datenserie (vielleicht falsches Start-/Enddatum?)"
+err_empty_series    = "ERR: Alle gewählten Datenserie sind leer."
+info_output_path    = "INFO: Output wird gespeichert nach: {}"
+
+# imageutils.py
+info_divergence     = "INFO: Seitenverhältnisabweichung zu A4: {:.2f}%"

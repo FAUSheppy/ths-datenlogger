@@ -17,13 +17,15 @@ import plot_graphutils
 import imageutils
 import timeutils
 
+import localization.de as localization
 
-def plot(datapoints, path=None, date1=None, date2=None, forcePath=False):
+
+def plot(datapoints, path=None, date1=None, date2=None, forcePath=False, qtTextBrowser=None):
         plotname = "" if CFG("name_of_plot") == "None" else CFG("name_of_plot")
         tup = [None,None,timeutils.between_dates,plotname]
-        return __plot(tup, datapoints, path, date1, date2, forcePath)
+        return __plot(tup, datapoints, path, date1, date2, forcePath, qtTextBrowser)
                         
-def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
+def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False, qtTextBrowser=None):
         NO_SERIES  = True
         x,y,ymin,ymax,unix_x,major_xticks = ( [] , [], -1 , -1 , [], [] )
         lw = CFG("plot_line_width")
@@ -47,7 +49,7 @@ def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
         # plot #
         for x, y, g in tupelsToIterate:
             if not x or not y or len(x) <= 0 or len(y) <= 0:
-                print("Warning: Empty series of data '%s' (wrong start/end time?)"%g.name)
+                qtTextBrowser.append(localization.warn_empty_series)
                 continue
             else:
                 NO_SERIES = False
@@ -61,8 +63,8 @@ def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
                 lagacy_y_save = y
         
         if NO_SERIES:
-            print("Error: no data, nothing to plot. cannot continue. exit.")
-            sys.exit(1)
+            qtTextBrowser.append(localization.err_empty_series)
+            raise ValueError(localization.err_empty_series)
 
         ## GRID ##
         plot_graphutils.general_background_setup(tup, ymin, ymax, legacy_x_save)
@@ -72,7 +74,7 @@ def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
             path = open_file()
         
         if not forcePath:
-            pic_path = output_path(path, date1, date2)
+            pic_path = output_path(path, date1, date2, qtTextBrowser)
         else:
             pic_path = path
         
@@ -87,11 +89,11 @@ def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False):
         tup[FIGURE].savefig(pic_path,dpi=DPI,pad_inches=0.1,bbox_inches='tight',transparent=CFG("transparent_background"))
 
         ### do operations on the finished png ###
-        imageutils.check_and_rotate(pic_path)
+        imageutils.check_and_rotate(pic_path, qtTextBrowser)
 
         return pic_path
 
-def output_path(path,date1,date2):
+def output_path(path, date1, date2, qtTextBrowser):
         if date1 != None and date2 == None:
             pic_path = path + "-nach-%s"%date1.strftime("%d.%m.%y")  + ".png"
         elif date1 == None and date2 != None:
@@ -100,5 +102,5 @@ def output_path(path,date1,date2):
             pic_path = path + "-alles" + ".png"
         else:
             pic_path = path + "-%s_to_%s"%(date1.strftime("%d.%m.%y"),date2.strftime("%d.%m.%y")) + ".png"
-        print("Output wird gespeichert nach: %s"%str(pic_path))
+        qtTextBrowser.append(localization.info_output_path.format(pic_path))
         return pic_path
