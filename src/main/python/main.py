@@ -284,7 +284,6 @@ class WidgetGallery(QDialog):
 
     def openFile(self, button):
         if button.text() == self.localization.open_pic and self.truePath:
-            print("JES")
             PyQt5.QtGui.QDesktopServices.openUrl(QUrl.fromLocalFile(self.truePath));
         else:
             pass
