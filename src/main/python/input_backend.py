@@ -211,7 +211,7 @@ def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True,
         elif backend != None:
                 backend(path)
         elif path.endswith(".DBF") or path.endswith(".dbf"):
-                dbfread(path,datapoints,pt,ph,pd)
+                dbfread(path,datapoints,pt,ph,pd, qtTextBrowser)
         elif path.endswith(".xls") or path.endswith(".XLS"):
                 csvread(path,datapoints,pt,ph,pd,qtTextBrowser)
         elif path.endswith(".txt"):
@@ -233,8 +233,20 @@ def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True,
 
         return datapoints
 
-def dbfread(path,datapoints,pt,ph,pd):
-    for record in DBF(path):
+def dbfread(path, datapoints, pt, ph, pd, qtTextBrowser):
+    print("lol")
+    dbfIterator = iter(DBF(path))
+    print("lol2")
+    while True:
+        record = None
+        try:
+            record = next(dbfIterator)
+        except ValueError as e:
+            qtTextBrowser.append("Warning: Fehlerhafter Eintrag wird übersprungen")
+            continue
+        except StopIteration:
+            break
+
         parse_line(datapoints, record, 'DATETIME',
                         [ ('TEMPCELS',pt), ('HUMIDITY',ph), ('DEWCELS',pd) ],
                         timeutils.time_from_dbf)

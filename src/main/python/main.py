@@ -16,6 +16,7 @@ import datetime as dt
 
 import input_backend
 import plot
+import traceback
 import config_parse as cp
 
 class WidgetGallery(QDialog):
@@ -242,9 +243,10 @@ class WidgetGallery(QDialog):
                                                     qtTextBrowser=self.infoTextBox)
         except Exception as e:
             errorBox = QMessageBox(self)
+            errorBox.setStyleSheet("QLabel{min-width: 700px;}");
             errorBox.setAttribute(PyQt5.QtCore.Qt.WA_DeleteOnClose)
             errorBox.setText(self.localization.error_read_in)
-            errorBox.setDetailedText(str(e))
+            errorBox.setDetailedText(traceback.format_exc())
             errorBox.show()
             return
 
