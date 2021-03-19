@@ -234,9 +234,7 @@ def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True,
         return datapoints
 
 def dbfread(path, datapoints, pt, ph, pd, qtTextBrowser):
-    print("lol")
     dbfIterator = iter(DBF(path))
-    print("lol2")
     while True:
         record = None
         try:
