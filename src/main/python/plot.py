@@ -34,16 +34,27 @@ def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False, qtTex
 
         # generate datapoints #
         tupelsToIterate = []
+        makeLast = None
         for key in datapoints.keys():
             g = datapoints[key]
             if not g.plot:
                 continue
             x,y, = g.get_timeframe(tup[CALLBACK],date1,date2)
-            tupelsToIterate += [(x, y, g)]
+            
+            # ensure a native value is last in the list to fix unix_x last tick #
+            if not makeLast and (g.name == CFG("plot_temperatur_key") or CFG("plot_humidity_key")):
+                makeLast = (x, y, g)
+            else:
+                tupelsToIterate += [(x, y, g)]
+                
+        tupelsToIterate += [makeLast]
 
         # check for negative values (legend padding) #
         anyValueNegative = False
         for x, y, g in tupelsToIterate:
+            if not y or len(y) == 0:
+                qtTextBrowser.append("leere Sequenz für {}, y: {}, x: {}".format(g.name, y, x))
+                raise ValueError("leere Sequenz für {}, y: {}, x: {}".format(g.name, y, x))
             anyValueNegative = anyValueNegative or min(y) < 0
 
         # plot #
