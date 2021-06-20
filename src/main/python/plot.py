@@ -65,7 +65,13 @@ def __plot(tup, datapoints, path, date1=None, date2=None, forcePath=False, qtTex
             else:
                 NO_SERIES = False
                 unix_x = [ el.timestamp() for el in x]
-                ymin,ymax = plot_graphutils.getlimits_y(y)
+                y_min_tmp, y_max_tmp = plot_graphutils.getlimits_y(y)
+                if ymin == -1:
+                    ymin = y_min_tmp
+                    ymax = y_max_tmp
+                else:
+                    ymin = min(y_min_tmp, ymin)
+                    ymax = min(y_max_tmp, ymax)
 
                 legend_label = plot_graphutils.legend_box_contents(g.name, y, anyValueNegative)
                 tup[AXIS].plot(unix_x, y, ls=ls, lw=lw, marker="None", 
