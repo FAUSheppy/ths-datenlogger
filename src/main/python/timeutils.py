@@ -14,8 +14,8 @@ def time_from_dbf(l, timeformat):
         offset_d = datetime(1970,1,1)-datetime(1900,1,1)
         shit_epoch = l*24*60*60 #days to seconds
         unix_epoch = datetime.fromtimestamp(shit_epoch) - offset_d
-        isDaylightSavingsTime = time.localtime(unix_epoch.timestamp())
-        if isDaylightSavingsTime:
+        isDaylightSavingsTime = time.localtime(unix_epoch.timestamp()).tm_isdst
+        if not isDaylightSavingsTime:
             unix_epoch -= timedelta(hours=1)
         return (unix_epoch - timedelta(days=2)  ).replace(microsecond=0)
 
