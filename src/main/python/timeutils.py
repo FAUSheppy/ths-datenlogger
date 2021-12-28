@@ -12,8 +12,12 @@ def time_from_dbf(l, timeformat):
         timeformat=None #dont need that here
         offset_d = datetime(1970,1,1)-datetime(1900,1,1)
         shit_epoch = l*24*60*60 #days to seconds
-        unix_epoch = datetime.fromtimestamp(shit_epoch)-offset_d
-        return (unix_epoch-timedelta(days=2)+timedelta(hours=CFG("add_hours_to_input"))).replace(microsecond=0)
+        unix_epoch = datetime.fromtimestamp(shit_epoch) - offset_d
+        isDaylightSavingsTime = time.localtime(unix_epoch.timestamp())
+        if isDaylightSavingsTime:
+            unix_epoch -= timedelta(hours=1)
+        return (unix_epoch - timedelta(days=2)  ).replace(microsecond=0)
+
 
 def time_from_csv(l, timeformat):
         return datetime.strptime(l, timeformat)
