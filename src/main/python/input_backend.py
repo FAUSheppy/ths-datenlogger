@@ -294,7 +294,11 @@ def csvread_txt(path,datapoints,pt,ph,pd,qtTextBrowser):
                                     timeutils.time_from_csv,
                                     timeformat="%d-%m-%Y_%H:%M")
         except (UnicodeError, IndexError):
-            count = csvread_txt_fallback(path,datapoints,pt,ph,pd)
+            try:
+                count = csvread_txt_fallback(path,datapoints,pt,ph,pd)
+            except (IndexError, ValueError):
+                count = csvread_txt_legacy(path,datapoints,pt,ph,pd)
+
 
         qtTextBrowser.append(de.info_ig_lines.format(count))
 
@@ -318,4 +322,27 @@ def csvread_txt_fallback(path,datapoints,pt,ph,pd):
                                 [('temp',pt), ('hum',ph), ('taupunkt',pd)],
                                 timeutils.time_from_csv,
                                 timeformat="%d-%m-%Y_%H:%M")
+    return count
+
+def csvread_txt_legacy(path,datapoints,pt,ph,pd):
+    count = 0
+    with open(path) as f:
+        for l in f:
+            if any(s in l for s in [">>", "----", "Uhrzeit"]):
+                count += 1
+                continue
+            else:
+                row_arg = list(map(lambda s:s.replace(" ","").replace(",","."),l.split("\t")))
+                row = {"temp":None,"hum":None,"taupunkt":None,"datetime":None}
+
+                # datetime, cutoff :SS at the end #
+                row["datetime"] = "{date}_{time}".format(date=row_arg[1], time=row_arg[2])[:-3]
+                row["temp"]     = float(row_arg[3])
+                row["hum"]      = float(row_arg[4])
+                row["taupunkt"] = float(row_arg[5])
+                parse_line(datapoints, row, 'datetime',
+                                [('temp',pt), ('hum',ph), ('taupunkt',pd)],
+                                timeutils.time_from_csv,
+                                timeformat="%d-%m-%Y_%H:%M")
+
     return count
