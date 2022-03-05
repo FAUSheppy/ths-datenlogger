@@ -226,7 +226,7 @@ class WidgetGallery(QDialog):
             targetDir = cp.CFG("default_source_dir")
 
         self.srcFileString = QFileDialog.getOpenFileName(self, self.localization.src_file_dialog, 
-                        targetDir, "Data-Files (*.txt *.csv *.dbf)")[0]
+                        targetDir, "Data-Files (*.txt *.csv *.dbf *.xls)")[0]
         self.srcFileName.setText(self.srcFileString)
 
         if not self.srcFileString:
