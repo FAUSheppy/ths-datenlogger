@@ -264,6 +264,7 @@ class WidgetGallery(QDialog):
         self.endDateEdit.lineEdit().setDisabled(False)
         self.startTimeEdit.setDisabled(False)
         self.endTimeEdit.setDisabled(False)
+        self.buttonGo.setFocus(PyQt5.QtCore.Qt.OtherFocusReason)
 
         self.infoTextBox.append(self.localization.testing_input_suc)
 
@@ -276,6 +277,7 @@ class WidgetGallery(QDialog):
 
         self.buttonTargetFile.setText(self.targetFileString)
         self.buttonGo.setDisabled(False)
+        self.buttonGo.setFocus(PyQt5.QtCore.Qt.OtherFocusReason)
 
     def useSrcDir(self):
         '''Function to handle use src dir checkbox'''
