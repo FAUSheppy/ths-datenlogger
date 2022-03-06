@@ -198,11 +198,16 @@ class WidgetGallery(QDialog):
         endDateTime   = dt.datetime.combine(self.endDateEdit.date().toPyDate(), zeroTime)
         endDateTime += endTimeOffset
 
-        self.truePath = plot.plot(self.datapoints, path=target,
+        try:
+            self.truePath = plot.plot(self.datapoints, path=target,
                             date1=startDateTime,
                             date2=endDateTime,
                             forcePath=forcePath,
                             qtTextBrowser=self.infoTextBox)
+        except ValueError as e:
+            self.infoTextBox.append("ERROR: " + str(e))
+            self.buttonGo.setText(self.localization.button_go)
+            return
 
         self.buttonGo.setText(self.localization.button_go)
         self.buttonGo.setDisabled(False)
