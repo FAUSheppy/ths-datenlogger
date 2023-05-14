@@ -182,7 +182,8 @@ def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True,
         names  = [ CFG("temperatur_plot_name"),
                    CFG("humidity_plot_name"),
                    CFG("dewcels_plot_name"),
-                   CFG("temperatur_outside_plot_name"),
+                   #CFG("temperatur_outside_plot_name"),
+                   "Außenlufttemperatur",
                    CFG("humidity_outside_plot_name") ]
 
         colors = [ CFG("temperatur_color"),
