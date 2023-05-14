@@ -68,6 +68,12 @@ class Data:
         else:
             while(i<len(self.times)):
                 if callback(self.times[i],date1,date2):
+
+                    if self.data[i] is None:
+                        self.qtTextBrowser.append(de.empty_data_value.format(self.times[i]))
+                        i += 1
+                        continue
+
                     out_x += [ self.times[i] ]
                     out_y += [ self.data[i]  ]
                 i += 1

@@ -29,6 +29,7 @@ special_err_1       = "Zeitstempelanzahl stimmt nicht mit Datensatzzahl überein
 warn_no_data        = "Warnung, keine Daten für {}"
 pg_request          = "Downloading: {}"
 info_ig_lines       = "INFO: Ignoriere {} Zeilen ohne Daten am Anfang der Datei"
+empty_data_value    = "WARN: Fehlende Daten in für {} - Datenpunkt wird übersprungen"
 
 # plot.py
 warn_empty_series   = "WARN: Leere Datenserie (vielleicht falsches Start-/Enddatum?)"
