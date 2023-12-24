@@ -126,6 +126,12 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype, qtText
         # download date if it doesn't exist #
         url = CFG("outside_data_url").format(dtype=dtype, fromDate=fromTimeStr, toDate=toTimeStr)
         r = requests.get(url)
+
+        # check response code #
+        if r.status_code != 200 or "nicht gefunden" in r.text.lower():
+            qtTextBrowser.append(de.failed_to_retrieve.format("NOT FOUND"))
+            raise ValueError("FAILED TO RETRIEVE DATA")
+
         qtTextBrowser.append(de.pg_request.format(url))
         content = r.content.decode('utf-8', "ignore") # ignore bad bytes
 
