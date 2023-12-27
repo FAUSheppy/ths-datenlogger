@@ -12,3 +12,4 @@ __py*
 *.log
 *.zip
 dist/
+dwd/
