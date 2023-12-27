@@ -8,6 +8,7 @@ import localization.de as de
 from dbfread import DBF
 import timeutils
 import codecs
+import fallback_csv
 
 line_colors = ['b', 'r', 'g', 'c', 'm', 'y']
 tname       = CFG("temperatur_plot_name")
@@ -126,8 +127,15 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype, qtText
         # download date if it doesn't exist #
         url = CFG("outside_data_url").format(dtype=dtype, fromDate=fromTimeStr, toDate=toTimeStr)
         r = requests.get(url)
-        qtTextBrowser.append(de.pg_request.format(url))
-        content = r.content.decode('utf-8', "ignore") # ignore bad bytes
+
+        # check response code #
+        if r.status_code != 200 or "nicht gefunden" in r.text.lower():
+            qtTextBrowser.append(de.failed_to_retrieve.format("NOT FOUND"))
+            qtTextBrowser.append("Versuche von DWD-Datei zu laden - Dass kann einen Moment dauern")
+            content = fallback_csv.generate(CFG("dwd_dir"), fromTime, toTime, cacheFile, dtype)
+        else:
+            qtTextBrowser.append(de.pg_request.format(url))
+            content = r.content.decode('utf-8', "ignore") # ignore bad bytes
 
         # cache data #
         if not os.path.isdir(cacheDir):
@@ -135,7 +143,7 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype, qtText
         with open(fullpath, 'w') as f:
             f.write(content)
 
-    else:
+    if os.path.isfile(fullpath):
 
         # get data from cache otherwise
         qtTextBrowser.append(de.cache_hit.format(cacheFile))

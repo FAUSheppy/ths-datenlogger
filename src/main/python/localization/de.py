@@ -42,3 +42,5 @@ info_divergence     = "INFO: Seitenverhältnisabweichung zu A4: {:.2f}%"
 success             = "INFO: Fertig."
 testing_input       = "Info: Eingabedatei wird geprüft..."
 testing_input_suc   = "Info: Eingabedatei akzeptiert."
+
+failed_to_retrieve = "ERROR: Kann Wetterarchiv-Daten nicht herunterladen ({})"

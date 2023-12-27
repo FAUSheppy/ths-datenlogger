@@ -169,20 +169,21 @@ class WidgetGallery(QDialog):
 
         # workaround for checkboxes changed #
         outsideDataNeeded = self.boxOTemp.isChecked() or self.boxOHumidity.isChecked()
-        self.datapoints = input_backend.read_in_file(self.srcFileString,
+
+        # build dates #
+        try:
+            self.datapoints = input_backend.read_in_file(self.srcFileString,
                                                 outsideData=outsideDataNeeded,
                                                 plotOutsideTemp=self.boxOTemp.isChecked(),
                                                 plotOutsideHum=self.boxOHumidity.isChecked(),
                                                 qtTextBrowser=self.infoTextBox)
 
-        # build dates #
-        try:
             startTimeHelper = dt.datetime.strptime(self.startTimeEdit.text(),"%H:%M")
             endTimeHelper   = dt.datetime.strptime(self.endTimeEdit.text(),"%H:%M")
         except ValueError as e:
             errorBox = QMessageBox(self)
             errorBox.setAttribute(PyQt5.QtCore.Qt.WA_DeleteOnClose)
-            errorBox.setText(self.localization.bad_time)
+            errorBox.setText(str(e))
             errorBox.setDetailedText(str(e))
             errorBox.show()
             self.buttonGo.setText(self.localization.button_go)

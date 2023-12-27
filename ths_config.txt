@@ -105,3 +105,4 @@ fig_x_height_inches         = 12100
 fig_y_height_inches         =  8075
 default_target_dir          = UseSourceDir
 default_source_dir          = "."
+dwd_dir = "./dwd/"
