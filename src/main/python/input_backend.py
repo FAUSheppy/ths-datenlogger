@@ -176,7 +176,7 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype, qtText
 
 
 def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True, 
-                    plotOutsideHum=True, qtTextBrowser=None):
+                    plotOutsideHum=True, qtTextBrowser=None, fromTime=None, toTime=None):
         '''Read in a file, add outside data if requested, optionally give a QtTextBrowser
             to output information, warnings and errors to.'''
 
@@ -237,8 +237,9 @@ def read_in_file(path, backend=None, outsideData=False, plotOutsideTemp=True,
         # if nessesary download and process external data #
         if outsideData:
 
-            fromTime = datapoints[CFG("plot_temperatur_key")].getFirstTime()
-            toTime   = datapoints[CFG("plot_temperatur_key")].getLastTime()
+            # removed in favor of parameter passed selected time from gui #
+            #fromTime = datapoints[CFG("plot_temperatur_key")].getFirstTime()
+            #toTime   = datapoints[CFG("plot_temperatur_key")].getLastTime()
 
             dtypeTemp = CFG("dtype_temperatur")
             dtypeHum  = CFG("dtype_humidity")

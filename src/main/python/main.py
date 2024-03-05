@@ -170,13 +170,20 @@ class WidgetGallery(QDialog):
         # workaround for checkboxes changed #
         outsideDataNeeded = self.boxOTemp.isChecked() or self.boxOHumidity.isChecked()
 
+        # read time early to use for external file #
+        zeroTime = dt.time(0, 0)
+        endDateTime   = dt.datetime.combine(self.endDateEdit.date().toPyDate(), zeroTime)
+        startDateTime = dt.datetime.combine(self.startDateEdit.date().toPyDate(), zeroTime)
+
         # build dates #
         try:
             self.datapoints = input_backend.read_in_file(self.srcFileString,
                                                 outsideData=outsideDataNeeded,
                                                 plotOutsideTemp=self.boxOTemp.isChecked(),
                                                 plotOutsideHum=self.boxOHumidity.isChecked(),
-                                                qtTextBrowser=self.infoTextBox)
+                                                qtTextBrowser=self.infoTextBox,
+                                                fromTime=startDateTime,
+                                                toTime=endDateTime)
 
             startTimeHelper = dt.datetime.strptime(self.startTimeEdit.text(),"%H:%M")
             endTimeHelper   = dt.datetime.strptime(self.endTimeEdit.text(),"%H:%M")
@@ -193,10 +200,7 @@ class WidgetGallery(QDialog):
         startTimeOffset = dt.timedelta(hours=startTimeHelper.hour, minutes=startTimeHelper.minute)
         endTimeOffset   = dt.timedelta(hours=endTimeHelper.hour, minutes=endTimeHelper.minute)
 
-        zeroTime = dt.time(0, 0)
-        startDateTime = dt.datetime.combine(self.startDateEdit.date().toPyDate(), zeroTime)
         startDateTime += startTimeOffset
-        endDateTime   = dt.datetime.combine(self.endDateEdit.date().toPyDate(), zeroTime)
         endDateTime += endTimeOffset
 
         try:
