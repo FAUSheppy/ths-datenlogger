@@ -47,6 +47,8 @@ def generate(master_dir, from_time, to_time, cache_file, dtype):
     if not files:
         raise ValueError("Keine DWD_Datei in: {} gefunden. Bitte herunterladen und entpacken! https://www.dwd.de/DE/leistungen/klimadatendeutschland/klarchivstunden.html;jsessionid=C423E76B30D18F24C43F4E7E36744C8C.live21073?nn=16102")
 
+    info_for_output_if_error = []
+
     for fname in files:
 
         start = None
@@ -82,10 +84,13 @@ def generate(master_dir, from_time, to_time, cache_file, dtype):
 
         # save values #
         timeframes.append((start, end, data))
+        info_for_output_if_error.append("{}\n{} bis {}".format(fname, start, end))
 
     # find a fitting frame #
     for start, end, data in timeframes:
         if from_time >= start and to_time <= end:
             return cache_content(from_time, to_time, data, dtype)
 
-    raise ValueError("Keine Datei mit passenden Daten gefunden. Bitte Readme lesen")
+    raise ValueError("Keine Datei mit passenden Daten gefunden. Bitte Readme lesen.\n\n" +
+                        "Zeiträume gefunden:\n" +
+                        "\n\n".join(info_for_output_if_error))
