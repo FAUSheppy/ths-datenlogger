@@ -73,18 +73,18 @@ def generate(master_dir, from_time, to_time, cache_file, dtype):
                 # parse date #
                 date = datetime.datetime.strptime(fulldate, "%Y%m%d%H")
 
+                # skip shit data #
+                if float(temp) < -100 or float(hum) < 0:
+                    continue
+
                 # append data #
                 data.append((date, float(temp), float(hum)))
 
                 # set start and end #
-                if "tu" in fname:
-                    print(line, date)
                 if not start and date:
                     start = date
                 elif date:
                     end = date
-                    if "tu" in fname:
-                        print(end)
 
         # save values #
         timeframes.append((start, end, data))
