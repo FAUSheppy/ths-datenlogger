@@ -77,10 +77,12 @@ def generate(master_dir, from_time, to_time, cache_file, dtype):
                 data.append((date, float(temp), float(hum)))
 
                 # set start and end #
+                print(line, date)
                 if not start and date:
                     start = date
                 elif date:
                     end = date
+                    print(end)
 
         # save values #
         timeframes.append((start, end, data))
