@@ -77,12 +77,14 @@ def generate(master_dir, from_time, to_time, cache_file, dtype):
                 data.append((date, float(temp), float(hum)))
 
                 # set start and end #
-                print(line, date)
+                if "tu" in fname:
+                    print(line, date)
                 if not start and date:
                     start = date
                 elif date:
                     end = date
-                    print(end)
+                    if "tu" in fname:
+                        print(end)
 
         # save values #
         timeframes.append((start, end, data))
@@ -95,4 +97,5 @@ def generate(master_dir, from_time, to_time, cache_file, dtype):
 
     raise ValueError("Keine Datei mit passenden Daten gefunden. Bitte Readme lesen.\n\n" +
                         "Zeiträume gefunden:\n" +
-                        "\n\n".join(info_for_output_if_error))
+                        "\n\n".join(info_for_output_if_error) +
+                        "\nZeitraum benötigt:\n" + "{} bis {}".format(from_time, to_time))
