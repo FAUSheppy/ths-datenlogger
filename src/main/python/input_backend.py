@@ -132,7 +132,7 @@ def processExternalData(datapoints, plotNameKey, fromTime, toTime, dtype, qtText
         if r.status_code != 200 or "nicht gefunden" in r.text.lower():
             qtTextBrowser.append(de.failed_to_retrieve.format("NOT FOUND"))
             qtTextBrowser.append("Versuche von DWD-Datei zu laden - Dass kann einen Moment dauern")
-            content = fallback_csv.generate(CFG("dwd_dir"), fromTime, toTime, cacheFile, dtype)
+            content = fallback_csv.generate(CFG("dwd_dir"), fromTime, toTime, cacheFile, dtype, qtTextBrowser)
         else:
             qtTextBrowser.append(de.pg_request.format(url))
             content = r.content.decode('utf-8', "ignore") # ignore bad bytes

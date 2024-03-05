@@ -34,7 +34,7 @@ def cache_content(from_time, to_time, data, dtype):
 
     return return_string
 
-def generate(master_dir, from_time, to_time, cache_file, dtype):
+def generate(master_dir, from_time, to_time, cache_file, dtype, qt_text_browser):
 
     timeframes = []
 
@@ -75,6 +75,9 @@ def generate(master_dir, from_time, to_time, cache_file, dtype):
 
                 # skip shit data #
                 if float(temp) < -100 or float(hum) < 0:
+                    wtext = "WARNING: Skipping broken DWD data @{} (hum: {}, temp: {}".format(
+                                date, hum, temp)
+                    qt_text_browser.append(wtext)
                     continue
 
                 # append data #
@@ -88,6 +91,7 @@ def generate(master_dir, from_time, to_time, cache_file, dtype):
 
         # save values #
         timeframes.append((start, end, data))
+        qt_text_browser.append("INFO: FILE: {}, START: {}, END: {}".format(fname, start, end))
         info_for_output_if_error.append("{}\n{} bis {}".format(fname, start, end))
 
     # find a fitting frame #
