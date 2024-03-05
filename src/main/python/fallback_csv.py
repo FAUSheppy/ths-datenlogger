@@ -95,7 +95,7 @@ def generate(master_dir, from_time, to_time, cache_file, dtype):
         if from_time >= start and to_time <= end:
             return cache_content(from_time, to_time, data, dtype)
 
-    raise ValueError("Keine Datei mit passenden Daten gefunden. Bitte Readme lesen.\n\n" +
+    raise ValueError("Keine Datei mit passenden Zeiten gefunden. Bitte Readme lesen.\n\n" +
                         "Zeiträume gefunden:\n" +
                         "\n\n".join(info_for_output_if_error) +
                         "\nZeitraum benötigt:\n" + "{} bis {}".format(from_time, to_time))
