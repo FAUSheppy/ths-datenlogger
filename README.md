@@ -10,11 +10,12 @@ This tool was developed to enable easy analysis of USB-Dataloggers that record h
 
 ## Run on Windows
 
-    pythonw.exe -m fbs run
+    pythonw.exe ./src/main/python/main.py
 
 ## Run on Linux
 
-    fbs run
+    # note: if xcb fails to load on wayland try: apt install --reinstall libxcb-xinerama0
+    python ./src/main/python/main.py
 
 ## Interface
 ![QT-Interface](https://media.atlantishq.de/pictures/qt_ths_datenlogger.png)
